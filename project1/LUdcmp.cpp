@@ -127,17 +127,20 @@ void LUdecomposition::solve(){
 
 
 void LUdecomposition::solve_constant_abc(){
+    // not correctd ... 
     u = new double[n];
     v = new double[n];
 
-    u[0] = *b;
+    u[0] = f[0];
+
 
     for (int i = 1; i<n; i++){
-        u[i] = 2 + u[i-1]*double(i-1)/double(i);
+        u[i] = f[i] + u[i-1]*(double(i)/double(i+1));
     }
-    v[n] = -double(n+1)/double(n);
-    for (int i=n-1; i>0; i--){
-        v[i] = (u[i] + v[i+1])*float(i)/float(i+1);
+    u[n-1] = u[n-1]/(double(n+1)/double(n));
+    v[n-1] = u[n-1];
+    for (int i=n-2; i>=1; i--){
+        v[i] = (u[i] + v[i+1])/(double(i+2)/double(i+1));
     }
 };
 
@@ -145,17 +148,21 @@ void LUdecomposition::solve_varying_abc(){
     if (!LU_found){
         throw "LU-decomposition must be found before calling this function";
     }
+
     u = new double[n];
     v = new double[n];
 
-    u[0] = b[0];
+
+    u[0] = f[0];
 
     for (int i = 1; i<n; i++){
-        u[i] = b[i] - u[i-1]*l[i-1];
+        u[i] = f[i] - u[i-1]*l[i-1];
     }
-    v[n]  = d[n]/a[n];
+    
+    u[n-1] = u[n-1]/d[n-1];
+    v[n-1]  = u[n-1];
 
-    for (int i = n-1; i>0; i--){
+    for (int i = n-2; i>=1; i--){ //0 or 1?
         v[i] = (u[i] - v[i+1]*c[i])/d[i];
     }
 

@@ -3,7 +3,7 @@ import numpy as np
 #hvordan sette andre randbetingelser?
 
 n=11
-h = 1/(n+1)
+h = 1/(n-1)
 
 a = np.zeros((n-1,))-1
 b = np.zeros((n,))+2
@@ -15,7 +15,6 @@ l = np.zeros((n-1,))
 
 x = np.linspace(0,1,n)#np.zeros((n,))
 f = 100*np.exp(-10*x)*h**2
-print(h,f)
 sol = 1 - (1-np.exp(-10))*x-np.exp(-10*x)
 
 
@@ -55,21 +54,22 @@ u[0] = f[0]
 for i in range(1,n):
     u[i] = f[i] - l[i-1]*u[i-1]
 
-
 u[-1] = u[-1]/d[-1]
 v[-1] = u[-1]
 
-for i in range(n-2,1,-1):
+print(v[-1])
+
+for i in range(n-2,0,-1):
     v[i] = (u[i] - v[i+1]*c[i])/d[i]
 
 
-print(v)
+print("u: ", u, "\n")
+print("v: ", v, "\n")
 
-#import matplotlib.pyplot as plt
-#plt.plot(v)
-#plt.plot(sol)
+import matplotlib.pyplot as plt
+plt.plot(v)
+plt.plot(sol)
 ##plt.plot(f)
-#plt.legend(["algo","anal"])
-#plt.show()
+plt.legend(["algo","anal"])
+plt.show()
 
-print(np.sum(np.abs(sol-v))/n)
