@@ -1,7 +1,8 @@
 import numpy as np
 
+#hvordan sette andre randbetingelser?
 
-n=10000
+n=11
 h = 1/(n+1)
 
 a = np.zeros((n-1,))-1
@@ -14,6 +15,7 @@ l = np.zeros((n-1,))
 
 x = np.linspace(0,1,n)#np.zeros((n,))
 f = 100*np.exp(-10*x)*h**2
+print(h,f)
 sol = 1 - (1-np.exp(-10))*x-np.exp(-10*x)
 
 
@@ -27,6 +29,7 @@ for i in range(1,n):
     l[i-1] = a[i-1]/d[i-1]
     d[i] = b[i-1] - l[i-1]*c[i-1]
 
+print(l,d)
 
 """
 L = np.zeros((n,n))
@@ -43,7 +46,6 @@ for i in range(n-1):
 print(L,"\n\n",U)
 print("\n\n", np.matmul(L,U))
 """
-
 #find u:
 u = np.zeros((n,))
 v = np.zeros((n,))
@@ -60,10 +62,14 @@ v[-1] = u[-1]
 for i in range(n-2,1,-1):
     v[i] = (u[i] - v[i+1]*c[i])/d[i]
 
-import matplotlib.pyplot as plt
-plt.plot(v)
-plt.plot(sol)
-plt.legend(["algo","anal"])
-plt.show()
 
-print(np.sum(np.abs(sol-v)))
+print(v)
+
+#import matplotlib.pyplot as plt
+#plt.plot(v)
+#plt.plot(sol)
+##plt.plot(f)
+#plt.legend(["algo","anal"])
+#plt.show()
+
+print(np.sum(np.abs(sol-v))/n)
