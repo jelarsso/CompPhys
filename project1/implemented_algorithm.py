@@ -2,7 +2,7 @@ import numpy as np
 
 #hvordan sette andre randbetingelser?
 
-n=11
+n=10_001
 h = 1/(n-1)
 
 a = np.zeros((n-1,))-1
@@ -15,7 +15,7 @@ l = np.zeros((n-1,))
 
 x = np.linspace(0,1,n)#np.zeros((n,))
 f = 100*np.exp(-10*x)*h**2
-sol = 1 - (1-np.exp(-10))*x-np.exp(-10*x)
+#sol = 1 - (1-np.exp(-10))*x-np.exp(-10*x)
 
 
 #set f
@@ -28,7 +28,7 @@ for i in range(1,n):
     l[i-1] = a[i-1]/d[i-1]
     d[i] = b[i-1] - l[i-1]*c[i-1]
 
-print(l,d)
+#print(l,d)
 
 """
 L = np.zeros((n,n))
@@ -57,12 +57,13 @@ for i in range(1,n):
 u[-1] = u[-1]/d[-1]
 v[-1] = u[-1]
 
-print(v[-1])
 
 for i in range(n-2,0,-1):
     v[i] = (u[i] - v[i+1]*c[i])/d[i]
 
 
+print(v[0])
+"""
 print("u: ", u, "\n")
 print("v: ", v, "\n")
 
@@ -73,3 +74,4 @@ plt.plot(sol)
 plt.legend(["algo","anal"])
 plt.show()
 
+"""

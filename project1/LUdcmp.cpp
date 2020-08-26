@@ -11,6 +11,8 @@ LUdecomposition::LUdecomposition(int N, double *f_array){
     h_stepsize = 1/double(n+1);
 
     constant_abc = true;
+    solved = false;
+    LU_found = false;
     
     a = new double;
     b = new double;
@@ -29,6 +31,10 @@ LUdecomposition::LUdecomposition(int N, double *a_array, double *b_array, double
     h_stepsize = 1/double(n+1);
 
     constant_abc = false;
+
+
+    solved = false;
+    LU_found = false;
     
     a = a_array;
 
@@ -127,12 +133,10 @@ void LUdecomposition::solve(){
 
 
 void LUdecomposition::solve_constant_abc(){
-    // not correctd ... 
     u = new double[n];
     v = new double[n];
 
     u[0] = f[0];
-
 
     for (int i = 1; i<n; i++){
         u[i] = f[i] + u[i-1]*(double(i)/double(i+1));
@@ -162,10 +166,9 @@ void LUdecomposition::solve_varying_abc(){
     u[n-1] = u[n-1]/d[n-1];
     v[n-1]  = u[n-1];
 
-    for (int i = n-2; i>=1; i--){ //0 or 1?
+    for (int i = n-2; i>=1; i--){
         v[i] = (u[i] - v[i+1]*c[i])/d[i];
     }
-
 };
 
 void LUdecomposition::print_solution(){
