@@ -1,5 +1,7 @@
 #include "LUdcmp.hpp"
 #include<iostream>
+#include<fstream>
+#include<string>
 
 
 using namespace std;
@@ -179,3 +181,13 @@ void LUdecomposition::print_solution(){
     }
     cout << " ]" << endl;
 }
+
+void LUdecomposition::write_v_to_file(string filename){
+    ofstream file_to_write;
+    file_to_write.open(filename);
+    
+    for (int i = 0; i<n; i++){
+        file_to_write << v[i] << "\n";
+    }
+    file_to_write.close();
+};

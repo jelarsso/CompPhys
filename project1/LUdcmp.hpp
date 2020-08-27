@@ -1,5 +1,6 @@
 #ifndef LUDCMP_H
 #define LUDCMP_H
+#include<string>
 
 class LUdecomposition{
 private:
@@ -36,7 +37,7 @@ double *geta();
 void solve();
 
 void print_solution();
-void write_v_to_file();
+void write_v_to_file(std::string filename);
 void print_LU();
 
 double *get_solution();
