@@ -1,4 +1,4 @@
-all: compile execute
+all: compile execute plot
 
 compile:
 	c++ -o main.out $(wildcard *.cpp)
@@ -7,4 +7,5 @@ compile:
 execute:
 	./main.out
 
-
+plot:
+	python read_data_file.py
