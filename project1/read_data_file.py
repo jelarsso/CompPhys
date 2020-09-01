@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 data = []
-with open("output.data") as fl:
+with open("special_output.data") as fl:
     for l in fl:
         data.append(float(l))
 
