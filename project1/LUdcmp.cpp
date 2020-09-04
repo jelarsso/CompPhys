@@ -180,7 +180,7 @@ void LUdecomposition::print_solution(){
         cout << " " << v[i];
     }
     cout << " ]" << endl;
-}
+};
 
 void LUdecomposition::write_v_to_file(string filename){
     ofstream file_to_write;
