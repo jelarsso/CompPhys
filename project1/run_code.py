@@ -1,0 +1,109 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import subprocess as sb
+
+
+def read_file(filename):
+    data = []
+    with open(filename) as fl:
+        for l in fl:
+            data.append(float(l))
+    data = np.asarray(data)
+    return data
+
+def analytical_result(n):
+    x = np.linspace(0,1,n,endpoint=True)
+    return x,1 - (1-np.exp(-10))*x-np.exp(-10*x)
+
+def func_1b():
+    #run the code for n=10,100,1000
+    #and compare with the analytical (make plots)
+
+    for n in [10,100,1000]:
+        sb.run(["./general.out",str(n)])
+        calc_result = read_file("general_output.data")
+        xaxis,analy_result = analytical_result(calc_result.size)
+        plt.plot(xaxis,calc_result)
+    plt.plot(xaxis,analy_result)
+    
+    plt.title("Solution of the linear system using the general algorithm.")
+    plt.xlabel("x")
+    plt.ylabel("$f_{sol}(x)$")
+    plt.legend(["$n=10$","$n=100$","$n=1000$","Analytical"])
+    plt.show()
+
+
+def func_1c():
+    N=range(1,7)
+    general_cpu_time = []
+    special_cpu_time = []
+    for n in N:
+        cpu_time=0
+        for i in range(10):
+            rs = sb.run(["time","-p","./general.out",str(10**n)],capture_output=True,text=True)
+            times = rs.stderr.split()
+            cpu_time += float(times[3]) + float(times[5])
+        cpu_time/=10
+        general_cpu_time.append(cpu_time)
+        
+    for n in N:
+        cpu_time=0
+        for i in range(10):
+            rs = sb.run(["time","-p","./special.out",str(10**n)],capture_output=True,text=True)
+            times = rs.stderr.split()
+            cpu_time += float(times[3]) + float(times[5])
+        cpu_time/=10
+        special_cpu_time.append(cpu_time)
+    
+    
+    plt.plot(N,general_cpu_time,"rx")
+    plt.plot(N,special_cpu_time,"bx")
+    plt.title("CPU time for general vs special")
+    plt.xlabel("log(n)")
+    plt.ylabel("Time [s]")
+    plt.legend(["General algorithm", "Special algorithm"])
+    plt.show()
+    
+
+def func_1d():
+    print("relative errors for special algorithm")
+    for n in [10**i for i in range(1,8)]:
+        sb.run(["./special.out",str(n)])
+        calc_result = read_file("special_output.data")
+        xaxis,analy_result = analytical_result(calc_result.size)
+        error = np.log10(np.abs((calc_result[1:-1]-analy_result[1:-1])/analy_result[1:-1])) #exclude endpoints since they are zeros
+        print(f"log(n) = {np.log10(n)} : {np.max(error)}")
+
+
+
+def func_1e():
+    N=range(1,4)
+    print("n | special | arma")
+    for n in N:
+        arma_cpu_time=0
+        for i in range(10):
+            rs = sb.run(["time","-p","./arma.out",str(10**n)],capture_output=True,text=True)
+            times = rs.stderr.split()
+            arma_cpu_time += float(times[3]) + float(times[5])
+        arma_cpu_time/=10
+
+    
+        special_cpu_time=0
+        for i in range(10):
+            rs = sb.run(["time","-p","./special.out",str(10**n)],capture_output=True,text=True)
+            times = rs.stderr.split()
+            special_cpu_time += float(times[3]) + float(times[5])
+        special_cpu_time/=10
+
+        print(f"log(n) = {n} | {special_cpu_time} | {arma_cpu_time} ")
+    
+
+
+print("1b")
+func_1b()
+print("1c")
+func_1c()
+print("1d")
+func_1d()
+print("1e")
+func_1e()

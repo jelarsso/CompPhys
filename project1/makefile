@@ -10,10 +10,10 @@ general:
 	c++ -o general.out general_algorithm.cpp LUdcmp.cpp
 
 arma:
-	c++ armadillo_algorithm.cpp LUdcmp.cpp -o arma.out -O2 -I /home/johan/armadillo/armadillo-9.900.2/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
+	c++ armadillo_algorithm.cpp -o arma.out -O2 -I /home/johan/armadillo/armadillo-9.900.2/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
 
 execute:
 	./main.out
 
-plot:
-	python read_data_file.py
+project: general special arma
+	python run_code.py

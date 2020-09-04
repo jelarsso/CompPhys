@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char* argv[]){
 
     int n = atoi(argv[1]);
-    double h = 1/double(n-1);
+    double h = 1/double(n+1);
 
     //double f_array[n];
     double *f_array;

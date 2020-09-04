@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char* argv[]){
 
     int n = atoi(argv[1]);
-    double h = 1/double(n-1);
+    double h = 1/double(n+1);
 
     //double f_array[n];
     double *f_array;
@@ -37,9 +37,8 @@ int main(int argc, char* argv[]){
 
     lud.findLU();
     lud.solve();
-    string filename = "output_general.data";
+    string filename = "general_output.data";
     lud.write_v_to_file(filename);
-
     delete[] f_array;
     delete[] a_array;
     delete[] b_array;
