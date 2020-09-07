@@ -1,3 +1,5 @@
+# this is not part of our delivered code, was used to develop the algorithm.
+
 import numpy as np
 
 #hvordan sette andre randbetingelser?
