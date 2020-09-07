@@ -116,11 +116,11 @@ def func_1e(reps=10):
     
 
 
-#print("1b")
-#func_1b()
-#print("1c")
-#func_1c(reps=10)
-#print("1d")
-#func_1d()
-#print("1e")
-#func_1e()
+print("1b")
+func_1b()
+print("1c")
+func_1c(reps=10)
+print("1d")
+func_1d()
+print("1e")
+func_1e()
