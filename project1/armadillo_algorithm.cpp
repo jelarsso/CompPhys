@@ -10,9 +10,11 @@ using namespace std;
 using namespace arma;
 
 int main(int argv, char* argc[]){
-
   int n = atoi(argc[1]);
   double h = 1/double(n-1);
+
+  // solve the linear system using the armadillo library functions
+
   mat A = Mat<double>(n,n,fill::zeros);
   vec b = vector<double>(n);
 
@@ -34,10 +36,9 @@ int main(int argv, char* argc[]){
 
 
   mat L,U;
-
   lu(L,U,A);
 
-  /*
+  /* print the matrix
   for (int i = 0; i<n; i++){
     for (int j = 0; j<n; j++){
 
@@ -48,17 +49,17 @@ int main(int argv, char* argc[]){
 
 
   vec u = solve(L,b);
-  
   vec v = solve(U,u);
 
-  //ofstream file_to_write;
-  //string filename = "armadillo_output.data";
-  //file_to_write.open(filename);
+  //write to file
+  ofstream file_to_write;
+  string filename = "armadillo_output.data";
+  file_to_write.open(filename);
 
-  //for (int i=0;i<n;i++){
-  //  file_to_write << v(i) << "\n";
-  //}
-  //file_to_write.close();
+  for (int i=0;i<n;i++){
+    file_to_write << v(i) << "\n";
+  }
+  file_to_write.close();
   
 
   return 0;

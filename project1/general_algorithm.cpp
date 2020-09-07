@@ -6,11 +6,11 @@
 using namespace std;
 
 int main(int argc, char* argv[]){
-
     int n = atoi(argv[1]);
     double h = 1/double(n+1);
 
-    //double f_array[n];
+    //solve the system using the general algorithm
+
     double *f_array;
     double *a_array;
     double *b_array;

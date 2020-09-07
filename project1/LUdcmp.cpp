@@ -9,6 +9,12 @@ using namespace std;
 
 
 LUdecomposition::LUdecomposition(int N, double *f_array){
+    /*
+    int N: size of array
+    double *f_array: pointer to the start of the array containg the values of f_i
+
+        the construcor for the class where a = c = -1 and b = 2
+    */
     n = N;
     h_stepsize = 1/double(n+1);
 
@@ -29,6 +35,13 @@ LUdecomposition::LUdecomposition(int N, double *f_array){
 
 
 LUdecomposition::LUdecomposition(int N, double *a_array, double *b_array, double *c_array, double *f_array){
+    /*
+    int N: size of array
+    double *a,*b,*c: pointer to the start of the array containing the N-1,N,N-1 values of a,b,c 
+    double *f_array: pointer to the start of the array containing the N values of f_i
+
+        the construcor for the class where a,b,c can be varying.
+    */
     n = N;
     h_stepsize = 1/double(n+1);
 
@@ -49,6 +62,7 @@ LUdecomposition::LUdecomposition(int N, double *a_array, double *b_array, double
 
 
 LUdecomposition::~LUdecomposition(){
+    // class destructor. clears the dynamically allocated arrays.
     if (constant_abc){
         delete a;
         delete b;
@@ -69,7 +83,9 @@ double *LUdecomposition::geta(){
 };
 
 void LUdecomposition::findLU(){
-    
+    /*
+        find the LU decomposition
+    */
     if (constant_abc){
         findLU_constant_abc();
     }else{
@@ -79,7 +95,7 @@ void LUdecomposition::findLU(){
 };
 
 
-void LUdecomposition::findLU_constant_abc(){ //not strictly needed
+void LUdecomposition::findLU_constant_abc(){ //not needed for solving the system
     l = new double[n-1];
     d = new double[n];
 
@@ -92,6 +108,9 @@ void LUdecomposition::findLU_constant_abc(){ //not strictly needed
 };
 
 void LUdecomposition::findLU_varying_abc(){
+    /*
+    solves the LU decomposition for the system and stores it in l and d.
+    */
     l = new double[n-1];
     d = new double[n];
 
@@ -105,6 +124,9 @@ void LUdecomposition::findLU_varying_abc(){
 
 
 void LUdecomposition::print_LU(){
+    /*
+        print the LU decomposition
+    */
     if (!LU_found){
         throw "findLU not yet called!";
     }
@@ -124,6 +146,9 @@ void LUdecomposition::print_LU(){
 };
 
 void LUdecomposition::solve(){
+    /*
+    solve and store result in v 
+    */
     
     if (constant_abc){
         solve_constant_abc();
@@ -135,6 +160,9 @@ void LUdecomposition::solve(){
 
 
 void LUdecomposition::solve_constant_abc(){
+    /*
+        solve with the special algorithm
+    */
     u = new double[n];
     v = new double[n];
 
@@ -151,6 +179,9 @@ void LUdecomposition::solve_constant_abc(){
 };
 
 void LUdecomposition::solve_varying_abc(){
+    /*
+        solve with the general case
+    */
     if (!LU_found){
         throw "LU-decomposition must be found before calling this function";
     }
@@ -174,6 +205,9 @@ void LUdecomposition::solve_varying_abc(){
 };
 
 void LUdecomposition::print_solution(){
+    /*
+        print the solution to stdout
+    */
 
     cout << "solution v = [";
     for (int i = 0; i<n; i++){
@@ -183,6 +217,9 @@ void LUdecomposition::print_solution(){
 };
 
 void LUdecomposition::write_v_to_file(string filename){
+    /*
+        write the solution to the file string filename
+    */
     ofstream file_to_write;
     file_to_write.open(filename);
     

@@ -5,7 +5,7 @@
 class LUdecomposition{
 private:
 int n; //size of matrix
-double h_stepsize; 
+double h_stepsize;
 double *a;
 double *b;
 double *c;
@@ -23,7 +23,7 @@ bool solved;
 bool constant_abc;
 
 public:
-//constructors for the two use cases
+//constructors for the two use cases general and specialized algorithm
 LUdecomposition(int N, double *a_array, double *b_array, double *c_array, double *f_array);
 LUdecomposition(int N, double *f_array);
 
@@ -39,7 +39,5 @@ void solve();
 void print_solution();
 void write_v_to_file(std::string filename);
 void print_LU();
-
-double *get_solution();
 };
 #endif
