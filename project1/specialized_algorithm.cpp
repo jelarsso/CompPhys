@@ -20,8 +20,8 @@ int main(int argc, char* argv[]){
     }
     LUdecomposition lud(n, &f_array[0]);
     lud.solve();
-    string filename = "special_output.data";
-    lud.write_v_to_file(filename);
+    //string filename = "special_output.data";
+    //lud.write_v_to_file(filename);
 
     return 0;
 }

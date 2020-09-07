@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import subprocess as sb
+import time
 
 
 def read_file(filename):
@@ -40,27 +41,31 @@ def func_1c():
     for n in N:
         cpu_time=0
         for i in range(10):
-            rs = sb.run(["time","-p","./general.out",str(10**n)],capture_output=True,text=True)
-            times = rs.stderr.split()
-            cpu_time += float(times[3]) + float(times[5])
-        cpu_time/=10
+            start_time = time.time_ns()
+            sb.run(["./general.out",str(10**n)])
+            end_time = time.time_ns()
+            cpu_time += end_time-start_time
+        cpu_time/=10*10**9
         general_cpu_time.append(cpu_time)
         
     for n in N:
         cpu_time=0
         for i in range(10):
-            rs = sb.run(["time","-p","./special.out",str(10**n)],capture_output=True,text=True)
-            times = rs.stderr.split()
-            cpu_time += float(times[3]) + float(times[5])
-        cpu_time/=10
+            start_time = time.time_ns()
+            sb.run(["./special.out",str(10**n)])
+            end_time = time.time_ns()
+            cpu_time += end_time-start_time
+        cpu_time/=10*10**9
         special_cpu_time.append(cpu_time)
     
-    
+    special_cpu_time = np.asarray(special_cpu_time)
+    general_cpu_time = np.asarray(general_cpu_time)
     plt.plot(N,general_cpu_time,"rx")
     plt.plot(N,special_cpu_time,"bx")
-    plt.title("CPU time for general vs special")
+    #plt.plot(N,general_cpu_time-special_cpu_time)
+    plt.title("CPU time for general algorithm vs specialized algorithm")
     plt.xlabel("log(n)")
-    plt.ylabel("Time [s]")
+    plt.ylabel("log(CPU time [s])")
     plt.legend(["General algorithm", "Special algorithm"])
     plt.show()
     
@@ -73,27 +78,34 @@ def func_1d():
         xaxis,analy_result = analytical_result(calc_result.size)
         error = np.log10(np.abs((calc_result[1:-1]-analy_result[1:-1])/analy_result[1:-1])) #exclude endpoints since they are zeros
         print(f"log(n) = {np.log10(n)} : {np.max(error)}")
+        plt.plot(np.log10(n),np.log10(np.max(error)),"rx")
+    plt.title("Max relative error for the specialized algorithm")
+    plt.xlabel("log(n)")
+    plt.ylabel("log(rel. error)")
+    plt.show()
 
 
 
 def func_1e():
-    N=range(1,4)
+    N=range(1,5)
     print("n | special | arma")
     for n in N:
         arma_cpu_time=0
         for i in range(10):
-            rs = sb.run(["time","-p","./arma.out",str(10**n)],capture_output=True,text=True)
-            times = rs.stderr.split()
-            arma_cpu_time += float(times[3]) + float(times[5])
-        arma_cpu_time/=10
+            start_time = time.time_ns()
+            sb.run(["./arma.out",str(10**n)])
+            end_time = time.time_ns()
+            arma_cpu_time += end_time-start_time
+        arma_cpu_time/=10*10**9
 
     
         special_cpu_time=0
         for i in range(10):
-            rs = sb.run(["time","-p","./special.out",str(10**n)],capture_output=True,text=True)
-            times = rs.stderr.split()
-            special_cpu_time += float(times[3]) + float(times[5])
-        special_cpu_time/=10
+            start_time = time.time_ns()
+            sb.run(["./special.out",str(10**n)])
+            end_time = time.time_ns()
+            special_cpu_time += end_time-start_time
+        special_cpu_time/=10*10**9
 
         print(f"log(n) = {n} | {special_cpu_time} | {arma_cpu_time} ")
     

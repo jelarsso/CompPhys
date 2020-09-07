@@ -35,29 +35,30 @@ int main(int argv, char* argc[]){
 
   mat L,U;
 
-    lu(L,U,A); 
+  lu(L,U,A);
 
+  /*
   for (int i = 0; i<n; i++){
     for (int j = 0; j<n; j++){
 
       cout << A(i,j) << " ";
     }
     cout << endl;
-  }
+  }*/
 
 
   vec u = solve(L,b);
   
   vec v = solve(U,u);
 
-  ofstream file_to_write;
-  string filename = "armadillo_output.data";
-  file_to_write.open(filename);
+  //ofstream file_to_write;
+  //string filename = "armadillo_output.data";
+  //file_to_write.open(filename);
 
-  for (int i=0;i<n;i++){
-    file_to_write << v(i) << "\n";
-  }
-  file_to_write.close();
+  //for (int i=0;i<n;i++){
+  //  file_to_write << v(i) << "\n";
+  //}
+  //file_to_write.close();
   
 
   return 0;
