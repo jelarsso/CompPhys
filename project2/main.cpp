@@ -1,64 +1,54 @@
 #include "jacobi_rotation.hpp"
 #include<iostream>
+#include<string>
 
 
 
+int main(int argc, char *argv[]){
+    int size = std::atoi(argv[1]);
+    int iters;
+    
+    double h = 1/(1.0*size);
+    double d = 2/(h*h);
+    double a = -1/(h*h);
 
-int main(){
-    int size = 5;
+    double* eigvals;
     double** array;
+    double** eigvectors;
+    
     array = new double*[size];
+    eigvals = new double[size];
+    eigvectors = new double*[size];
     for (int i=0;i<size;i++){
         array[i] = new double[size];
+        eigvectors[i] = new double[size];
     }
-
-    array[0][0] = 1;
-    array[1][1] = 5;
-    array[2][2] = 7;
-    array[3][3] = 3;
-    array[4][4] = 5;
-
-    array[0][1] = 6;
-    array[1][0] = 6;
-    array[2][0] = 7;
-    array[0][2] = 7;
-    array[0][3] = 1;
-    array[3][0] = 1;
-    array[0][4] = 6;
-    array[4][0] = 6;
-
-    array[1][2] = 3;
-    array[2][1] = 3;
-    array[3][1] = 4;
-    array[1][3] = 4;
-    array[1][4] = 5;
-    array[4][1] = 5;
-
-    array[2][3] = 9;
-    array[3][2] = 9;
-    array[2][4] = 4;
-    array[4][2] = 4;
-
-    array[4][3] = 3;
-    array[3][4] = 3;
 
     for (int i = 0;i<size;i++){
-        for (int j = 0;j<size;j++){
-            std::cout << array[i][j] << " ";
+        array[i][i] = d;
+        if(i>0){
+        array[i][i-1] = a;
+        array[i-1][i] = a;
         }
-        std::cout << "\n";
+        for (int j = 0;j<size;j++){
+            if (i!=j){
+                eigvectors[i][j] = 0;
+            }else{
+                eigvectors[i][j] = 1;
+            }            
+        }
     }
 
-    int iters;
-    double* eigvals;
-    eigvals = new double[size];
+    iters = jacobi_rotate(array,eigvals,eigvectors,size,1e-8);
 
-    iters = jacobi_rotate(array,eigvals,size,1e-13);
+    std::string filename = "data.out";
+    write_to_file(filename,eigvectors,eigvals,size);
 
-    std::cout << "iters: " << iters << std::endl;
-    std::cout << "eigenvalues" << std::endl;
-    for (int i = 0; i<size; i++){
-        std::cout << eigvals[i] << std::endl;
+    delete[] eigvals;
+    for (int i=0;i<size;i++){
+        delete[] eigvectors[i];
+        delete[] array[i];
     }
+        
     return 0;
 };
