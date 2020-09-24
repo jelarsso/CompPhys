@@ -29,7 +29,7 @@ print(solved_eigvals)
 
 N = np.size(solved_eigvals)
 
-anal_eigvals,analytical_solution = analytical_solution(N)
+anal_eigvals,anal_eigvector = analytical_solution(N)
 
 plt.plot(anal_eigvals)
 plt.plot(solved_eigvals)
