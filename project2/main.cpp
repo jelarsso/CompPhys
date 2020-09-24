@@ -39,10 +39,10 @@ int main(int argc, char *argv[]){
         }
     }
 
-    iters = jacobi_rotate(array,eigvals,eigvectors,size,1e-8);
+    iters = jacobi_rotate(array,eigvals,eigvectors,size,10000000,1e-8);
 
     std::string filename = "data.out";
-    write_to_file(filename,eigvectors,eigvals,size);
+    write_to_file(filename,eigvectors,eigvals,iters,size);
 
     delete[] eigvals;
     for (int i=0;i<size;i++){

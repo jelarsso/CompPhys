@@ -56,7 +56,7 @@ void rotate(double** array, double** eigvectors, int size, int l, int k, double 
 
 
 
-int jacobi_rotate(double** array, double* eigvals, double** eigvectors, int size, double tolerance){
+int jacobi_rotate(double** array, double* eigvals, double** eigvectors, int size, int maxiter, double tolerance){
     /*
 
     Inputs:
@@ -70,13 +70,13 @@ int jacobi_rotate(double** array, double* eigvals, double** eigvectors, int size
     int: the number of iterations that was needed
     */
     int number_of_iterations = 0;
-    int maxiter = 10000;
-    int k = 0;
+    int k = 1;
     int l = 0;
-    double tau = 0;
-    double t = 0;
-    double c = 0;
-    double s = 0;
+    double tau,t,c,s;
+    //double tau = 0;
+    //double t = 0;
+    //double c = 0;
+    //double s = 0;
 
     while (off_diagonl(array,size)>=tolerance && maxiter>number_of_iterations){
         //find largest value:
@@ -130,7 +130,7 @@ return number_of_iterations;
 
 
 
-void write_to_file(std::string filename, double** eigvectors, double* eigvals, int size){
+void write_to_file(std::string filename, double** eigvectors, double* eigvals, int iters, int size){
     /*
     writes to filename
     */
@@ -139,6 +139,7 @@ void write_to_file(std::string filename, double** eigvectors, double* eigvals, i
 
     outfile.open(filename);
 
+    outfile << iters << "\n";
     for (int i=0;i<size+1;i++){
         for (int j=0; j<size;j++){
             if (i==0){
