@@ -58,8 +58,12 @@ plt.show()
 
 
 
-plt.plot((jacobi_rot_eigvectors[0,:])/np.linalg.norm((jacobi_rot_eigvectors[0,:])))
-plt.plot(anal_eigvector[0,:]/np.linalg.norm(anal_eigvector[0,:]))
+jr = np.zeros((N+2))
+al = np.zeros((N+2))
+jr[1:-1] = (jacobi_rot_eigvectors[0,:])/np.linalg.norm(jacobi_rot_eigvectors[0,:])
+al[1:-1] = anal_eigvector[0,:]/np.linalg.norm(anal_eigvector[0,:])
+plt.plot(jr)
+plt.plot(al)
 plt.legend(["Jacobi rotation","Analytical"])
 plt.title("Eigenvector corresponding to the lowest eigenvalue")
 plt.xlabel("Component $x_i$")

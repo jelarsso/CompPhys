@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
     int iters;
     
 
-    double rho_max = 10; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
+    double rho_max = 100; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
 
     double h = rho_max/(1.0*size);
     double d = 2.0/(h*h);
