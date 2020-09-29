@@ -12,9 +12,9 @@ double off_diagonl(double** array, int size){
             if (j==i){
                 continue;
             }
-            if (array[i][j] != array[j][i]){
-                throw std::runtime_error("Array not symmetric!");
-            }
+            //if (array[i][j] != array[j][i]){
+            //    throw std::runtime_error("Array not symmetric!");
+            //}
             sum = sum + array[i][j]*array[i][j];
         }
     }
@@ -154,3 +154,16 @@ void write_to_file(std::string filename, double** eigvectors, double* eigvals, i
     outfile.close();
 };
 
+
+void analytical(double* analyt_eigval, double** analyt_eigvec, int N) {
+    double h = 1.0/N;
+    double d = 2.0/(h*h);
+    double a = -1.0/(h*h);
+
+    for (int i=1; i<(N+1); i++){
+        analyt_eigval[i-1] = d + 2*a*std::cos(i*M_PI/(N+1));
+        for (int j=1; j<(N+1); j++){
+            analyt_eigvec[i-1][j-1] = std::sin(i*j*M_PI/(N+1));
+        }
+    }
+};
