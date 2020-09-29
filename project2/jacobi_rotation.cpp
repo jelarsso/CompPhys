@@ -95,9 +95,9 @@ int jacobi_rotate(double** array, double* eigvals, double** eigvectors, int size
         //find tau, t, c and s
         tau = (array[l][l] - array[k][k])/(2*array[k][l]);
         if (tau>=0){
-            t = -tau + std::sqrt(1 + tau*tau); // or minus or something else, not sure!
+            t = 1.0/(tau + std::sqrt(1 + tau*tau));
         }else{
-            t = -tau - std::sqrt(1 + tau*tau); // or minus or something else, not sure!
+            t = -1.0/(-tau + std::sqrt(1 + tau*tau));
         }
         c = 1/std::sqrt(1+t*t);
         s = t*c;

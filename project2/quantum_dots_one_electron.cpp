@@ -9,9 +9,12 @@ int main(int argc, char *argv[]){
     double tol = std::atof(argv[2]);
     int iters;
     
-    double h = 1/(1.0*size);
-    double d = 2/(h*h);
-    double a = -1/(h*h);
+
+    double rho_max = 4.5; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
+
+    double h = rho_max/(1.0*size);
+    double d = 2.0/(h*h);
+    double a = -1.0/(h*h);
 
     double* eigvals;
     double** array;
@@ -23,13 +26,16 @@ int main(int argc, char *argv[]){
     for (int i=0;i<size;i++){
         array[i] = new double[size];
         eigvectors[i] = new double[size];
+        for (int j=0;j<size;j++){
+            array[i][j]=0;
+        }
     }
 
     for (int i = 0;i<size;i++){
-        array[i][i] = d;
-        if(i>0){
-        array[i][i-1] = a;
-        array[i-1][i] = a;
+        array[i][i] = d + (i+1)*(i+1)*h*h;
+        if(i<size-1){
+        array[i][i+1] = a;
+        array[i+1][i] = a;
         }
         for (int j = 0;j<size;j++){
             if (i!=j){
@@ -40,16 +46,16 @@ int main(int argc, char *argv[]){
         }
     }
 
-    iters = jacobi_rotate(array,eigvals,eigvectors,size,10000000,tol);
+    iters = jacobi_rotate(array,eigvals,eigvectors,size,10000000,1e-16);
 
     std::cout << iters << std::endl;
 
-    for (int i=0; i<size; i++){
-        std::cout << eigvals[i] << "\n";
-    }
-
-    std::string filename = "data.out";
+    std::string filename = "eigen_data.out";
     write_to_file(filename,eigvectors,eigvals,iters,size);
+
+    for (int i=0;i<size;i++){
+        std::cout << eigvals[i] << std::endl;
+    }
 
     delete[] eigvals;
     for (int i=0;i<size;i++){
