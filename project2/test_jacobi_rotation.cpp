@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_MAIN 
+#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "jacobi_rotation.hpp"
 #include<armadillo>
@@ -9,7 +9,9 @@ TEST_CASE() {
     numerical and analytical solution is within 
     the given tolerance  */
 
-    int size = 100;
+    int size = 10;
+    int max_iter = 1000000;
+    double tolerance = 1e-16;
     int iters;
     
     double h = 1/(1.0*size);
@@ -30,21 +32,22 @@ TEST_CASE() {
     }
 
     for (int i = 0;i<size;i++){
+        for (int j = 0;j<size;j++){
+            array[i][j] = 0;
+            if (i!=j){
+                eigvectors[i][j] = 0;
+            }else{
+                eigvectors[i][j] = 1;
+            }
+        }
         array[i][i] = d;
         if(i>0){
         array[i][i-1] = a;
         array[i-1][i] = a;
         }
-        for (int j = 0;j<size;j++){
-            if (i!=j){
-                eigvectors[i][j] = 0;
-            }else{
-                eigvectors[i][j] = 1;
-            }            
-        }
     }
 
-    iters = jacobi_rotate(array,eigvals,eigvectors,size,10000000,1e-8);
+    iters = jacobi_rotate(array,eigvals,eigvectors,size,max_iter,tolerance);
 
     for (int i=0; i<size; i++){
         std::cout << eigvals[i] << "\n";
