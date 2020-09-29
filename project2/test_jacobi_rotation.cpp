@@ -1,8 +1,13 @@
 #define CATCH_CONFIG_MAIN 
 #include "catch.hpp"
 #include "jacobi_rotation.hpp"
+#include<armadillo>
+
 
 TEST_CASE() {
+    /* First case: Checks if differnce between 
+    numerical and analytical solution is within 
+    the given tolerance  */
 
     int size = 100;
     int iters;
@@ -74,6 +79,26 @@ TEST_CASE() {
         delete[] eigvectors[i];
         delete[] array[i];
     }
+
+    /* Second case: Checks if differnce between 
+    numerical and analytical solution is within 
+    the given tolerance for another arbitrary 
+    matrix A */
+    
+    arma::mat A(3,3);
+    A.zeros();
+    A(0,0) = 2;
+    A(1,1) = 3;
+    A(1,2) = 4;
+    A(2,1) = 4;
+    A(2,2) = 9;
+
+    arma::vec evalues;
+    arma::mat evectors;
+
+    arma::eig_sym(evalues, evectors, A);
+
+
 
     REQUIRE( true );
 }
