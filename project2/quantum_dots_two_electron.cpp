@@ -5,13 +5,16 @@
 
 
 int main(int argc, char *argv[]){
+    /*
+    This program solves the two electron problem.
+    */
     int size = std::atoi(argv[1]);
     double tol = std::atof(argv[2]);
     double omega_r = std::atof(argv[3]);
     int iters;
     
 
-    double rho_max = 100; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
+    double rho_max = 100; 
 
     double h = rho_max/(1.0*size);
     double d = 2.0/(h*h);

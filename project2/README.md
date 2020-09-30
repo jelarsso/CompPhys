@@ -45,6 +45,8 @@ Unit tests have been implemented in test_jacobi_rotation.cpp and is compiled wit
 make sure that the catch2 (from https://github.com/catchorg/Catch2) header file catch.hpp is in the same directory as the test_jacobi_rotation.cpp file.
 The test are then run with:
     ./test.o
+Or if the makefile has been run:
+    make test
 Our tested result yields,
 \>>>.-/test.o
 ===============================================================================

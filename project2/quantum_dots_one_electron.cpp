@@ -5,13 +5,16 @@
 
 
 int main(int argc, char *argv[]){
+    /*
+    This program solves the one electron problem
+    */
     int size = std::atoi(argv[1]);
     double tol = std::atof(argv[2]);
     //double rho_max = std::atof(argv[3]); for testing different rho_maxes.
     int iters;
     
 
-    double rho_max = 9; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
+    double rho_max = 4.5; 
 
     double h = rho_max/(1.0*size);
     std::cout << "h = " << h << std::endl;
@@ -52,7 +55,7 @@ int main(int argc, char *argv[]){
 
     std::cout << iters << std::endl;
 
-    std::string filename = "eigen_data.out";
+    std::string filename = "eigen.data";
     write_to_file(filename,eigvectors,eigvals,iters,size);
 
     for (int i=0;i<size;i++){
