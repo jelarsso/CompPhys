@@ -186,6 +186,16 @@ void write_to_file(std::string filename, double** eigvectors, double* eigvals, i
 
 
 void analytical(double* analyt_eigval, double** analyt_eigvec, int N) {
+    /*
+    Solves analytically the spring problem
+
+    Inputs:
+    double* analyt_eigval: an array of length n to store eigenvalues in 
+    double** analyt_eigvec: an identity matrix of the same shape as array. Will transform to contain the eigenvectors in its columns
+    int N: size n of the array
+    
+    Outputs:
+    */
     double h = 1.0/N;
     double d = 2.0/(h*h);
     double a = -1.0/(h*h);
