@@ -68,7 +68,7 @@ Or if the makefile has been run:
 
 Our tested result yields,
 
-```\>>>.-/test.o
+```>>>.-/test.o
 ===============================================================================
 All tests passed (10101 assertions in 1 test case)```
 
