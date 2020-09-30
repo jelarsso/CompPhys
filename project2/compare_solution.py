@@ -16,7 +16,7 @@ def analytical_solution(N):
     a = -1/h**2
 
     j = np.linspace(1,N,N,dtype=np.int64)
-    print(j)
+    #print(j)
 
 
     analytical_eigvals = d + 2*a*np.cos(j*np.pi/(N+1))
@@ -49,7 +49,6 @@ arma_eigvectors = data[1:,:][arma_sort_keys]
 N = np.size(jacobi_rot_eigvals)
 
 analytical_eigvals,analytical_eigvector = analytical_solution(N)
-embed()
 fig,ax = plt.subplots(2,1)
 fig.suptitle("Comparison between the analytical, jacobi rotation and armadillo eigenvalues")
 ax[0].set_title("Eigenvalues")
