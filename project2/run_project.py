@@ -77,7 +77,7 @@ def e2e_two_electron():
     omega_r = [0.01,0.5,1,5]
     first_eig = []
     for omega in omega_r:
-        sb.run(["./quantum_two.out",str(400),str(1e-8),str(omega)])
+        sb.run(["./quant_two.o",str(400),str(1e-8),str(omega)])
         data = np.loadtxt("two_electron.data",skiprows=1)
         sorts = np.argsort(data[0,:])
         first_eig.append(data[1:,:][sorts][0])
