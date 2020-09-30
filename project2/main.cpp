@@ -5,6 +5,9 @@
 
 
 int main(int argc, char *argv[]){
+    /*
+    This program calculates the simple spring with fixed ends, prints the number of iterations, and writes the solution to file.
+    */
     int size = std::atoi(argv[1]);
     double tol = std::atof(argv[2]);
     int iters;
@@ -26,17 +29,18 @@ int main(int argc, char *argv[]){
     }
 
     for (int i = 0;i<size;i++){
-        array[i][i] = d;
-        if(i>0){
-        array[i][i-1] = a;
-        array[i-1][i] = a;
-        }
         for (int j = 0;j<size;j++){
+            array[i][j] = 0;
             if (i!=j){
                 eigvectors[i][j] = 0;
             }else{
                 eigvectors[i][j] = 1;
             }            
+        }
+        array[i][i] = d;
+        if(i>0){
+        array[i][i-1] = a;
+        array[i-1][i] = a;
         }
     }
 

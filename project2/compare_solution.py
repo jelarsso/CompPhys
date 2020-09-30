@@ -37,7 +37,7 @@ arma_eigvectors = data[1:,:][arma_sort_keys]
 N = np.size(jacobi_rot_eigvals)
 
 anal_eigvals,anal_eigvector = analytical_solution(N)
-
+embed()
 fig,ax = plt.subplots(2,1)
 fig.suptitle("Comparison between the analytical, jacobi rotation and armadillo eigenvalues")
 ax[0].set_title("Eigenvalues")

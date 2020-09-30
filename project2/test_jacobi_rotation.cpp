@@ -2,7 +2,7 @@
 #include "catch.hpp"
 #include "jacobi_rotation.hpp"
 #include<armadillo>
-
+#include<cmath>
 
 TEST_CASE() {
     /* First case: Checks if differnce between 
@@ -65,7 +65,7 @@ TEST_CASE() {
     arma::vec X = arma::sort(Y); 
 
     for (int i=0; i<size; i++){
-        if ((X(i)-analyt_eigval[i])<1e-8){
+        if (std::abs(X(i)-analyt_eigval[i])<1e-8){
             REQUIRE( true );
         }
     }
@@ -102,6 +102,9 @@ TEST_CASE() {
     test_matrix = new double*[N];
     for (int i=0;i<N;i++){
         test_matrix[i] = new double[size];
+        for (int j=0;j<N;j++){
+            test_matrix[i][j] = 0;
+        }
     }
     test_matrix[0][0] = 2;
     test_matrix[1][1] = 3;
@@ -130,14 +133,20 @@ TEST_CASE() {
 
    double count = 0;
    double prod = 0;
+   double dot_product = 0;
    for (int i=0; i<size; i++){
-       for (int j=0; j<size; j++){
-            prod = eigvectors[j][i]*eigvectors[j][i];
-        count = count + prod;
+        for (int j=0; j<size; j++){
+           for (int k=0;k<size;k++){
+            dot_product = dot_product + eigvectors[j][k]*eigvectors[i][k];
+           }
+            if (i!=j){
+                REQUIRE(std::abs(dot_product)<1e-8);
+            }else{
+                REQUIRE(std::abs(dot_product-1)<1e-8);
+            }
+            dot_product = 0;
        }
    }
-   // every columnvectors inner product should yield 1 
-   REQUIRE (abs(count-100.0)<1e-8);
 
 
    delete[] eigvals;

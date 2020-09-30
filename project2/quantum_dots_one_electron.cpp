@@ -1,18 +1,20 @@
 #include "jacobi_rotation.hpp"
 #include<iostream>
 #include<string>
-
+#include<iomanip>
 
 
 int main(int argc, char *argv[]){
     int size = std::atoi(argv[1]);
     double tol = std::atof(argv[2]);
+    //double rho_max = std::atof(argv[3]);
     int iters;
     
 
-    double rho_max = 4.5; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
+    double rho_max = 9; //size ser ut til å måtte være mye større enn rhomax for å gi løsningen
 
     double h = rho_max/(1.0*size);
+    std::cout << "h = " << h << std::endl;
     double d = 2.0/(h*h);
     double a = -1.0/(h*h);
 
@@ -46,7 +48,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    iters = jacobi_rotate(array,eigvals,eigvectors,size,10000000,1e-16);
+    iters = jacobi_rotate(array,eigvals,eigvectors,size,10000000,tol);
 
     std::cout << iters << std::endl;
 
@@ -54,7 +56,7 @@ int main(int argc, char *argv[]){
     write_to_file(filename,eigvectors,eigvals,iters,size);
 
     for (int i=0;i<size;i++){
-        std::cout << eigvals[i] << std::endl;
+        std::cout << std::setprecision(15) << eigvals[i] << std::endl;
     }
 
     delete[] eigvals;

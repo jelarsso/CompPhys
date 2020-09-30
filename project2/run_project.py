@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import subprocess as sb
 from time import time_ns
-
+from IPython import embed
 
 
 def e2b_number_of_iterations():
@@ -17,16 +17,18 @@ def e2b_number_of_iterations():
             iterations_needed.append(int(result.stdout))
         ax.plot(n_vals,iterations_needed)
         legend.append(f"log(tol)={np.log10(tol):.1f}")
-        iterations_needed = []
+        #iterations_needed = []
         n_vals = []
     
-    n_vals = range(100)
+    n_vals = range(200)
     ax.fill_between(n_vals,3*np.asarray(n_vals)**2,5*np.asarray(n_vals)**2,where=True,facecolor="red",alpha=0.5)
     fig.suptitle("Convergence rate for Jacobi rotation method")
     ax.set_xlabel("size of matrix")
     ax.set_ylabel("number of iterations needed")
     ax.legend(legend+["theoretical"],loc="upper left")
     plt.show()
+    embed()
+
 
 
 def e2b_armadillo_vs_own():
@@ -45,6 +47,7 @@ def e2b_armadillo_vs_own():
     
     plt.plot(arma_times)
     plt.plot(own_times)
+    plt.legend(["Armadillo implementation", "Jacobi rotation algorithm"])
     plt.xlabel("size of matrix")
     plt.ylabel("elapsed time [s]")
     plt.show()
@@ -87,5 +90,5 @@ def e2e_two_electron():
 
 #e2b_armadillo_vs_own()
 #e2b_number_of_iterations()
-e2c_quantum()
-#e2e_two_electron()
+#e2c_quantum()
+# #e2e_two_electron()
