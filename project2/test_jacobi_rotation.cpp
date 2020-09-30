@@ -9,6 +9,7 @@ TEST_CASE() {
     numerical and analytical solution is within 
     the given tolerance  */
 
+    // We initilize the spring problem with N=100 mesh points
     int size = 100;
     int max_iter = 1000000;
     double tolerance = 1e-16;
@@ -47,8 +48,10 @@ TEST_CASE() {
         }
     }
 
+    // We solve the linear system for the eigenvalues and eigenvectors with our Jacobi rotation algorithm 
     iters = jacobi_rotate(array,eigvals,eigvectors,size,max_iter,tolerance);
 
+    // We solve the system analytically for comparison
     double* analyt_eigval;
     double** analyt_eigvec; 
     analyt_eigval = new double[size];
@@ -64,6 +67,7 @@ TEST_CASE() {
     }
     arma::vec X = arma::sort(Y); 
 
+    // This is the test. We check if the jacobi solution is in compliance with the analytical of all eigenvalues. 
     for (int i=0; i<size; i++){
         if (std::abs(X(i)-analyt_eigval[i])<1e-8){
             REQUIRE( true );
@@ -76,7 +80,7 @@ TEST_CASE() {
     the given tolerance for another arbitrary 
     matrix A */
 
-
+    // We initialize a known problem 
     int N = 3;
     double* eiva;
     double** eive;
@@ -112,15 +116,17 @@ TEST_CASE() {
     test_matrix[2][1] = 4;
     test_matrix[2][2] = 9;
 
-
+    // We solve the system with the Jacobi rotation algorithm 
     iters = jacobi_rotate(test_matrix,eiva,eive,N,max_iter,tolerance);   
 
+    // We set the correct eigenvalues in an array
     double* val;
     val = new double[N];
     val[0] = 1;
     val[1] = 2;
     val[2] = 11;
 
+    // We test if the numerical solution is in compliance with the known solution
     for (int i=0; i<N; i++){
         if (abs(val[i] - eiva[i])<1e-8){
             REQUIRE( true );
