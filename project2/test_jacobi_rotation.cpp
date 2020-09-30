@@ -9,7 +9,7 @@ TEST_CASE() {
     numerical and analytical solution is within 
     the given tolerance  */
 
-    int size = 10;
+    int size = 100;
     int max_iter = 1000000;
     double tolerance = 1e-16;
     int iters;
@@ -49,10 +49,6 @@ TEST_CASE() {
 
     iters = jacobi_rotate(array,eigvals,eigvectors,size,max_iter,tolerance);
 
-    for (int i=0; i<size; i++){
-        std::cout << eigvals[i] << "\n";
-    }
-
     double* analyt_eigval;
     double** analyt_eigvec; 
     analyt_eigval = new double[size];
@@ -62,46 +58,93 @@ TEST_CASE() {
     }
     analytical(analyt_eigval, analyt_eigvec, size);
 
-    /*
+    arma::vec Y(size);
     for (int i=0; i<size; i++){
-        std::cout << eigvals[i] << " ";
-        std::cout << analyt_eigval[i] << "\n";
+        Y(i) = eigvals[i];
     }
-    */
+    arma::vec X = arma::sort(Y); 
 
-    std::string filename = "data2.out";
-    write_to_file(filename,eigvectors,eigvals,iters,size);
-
-    /*
-    std::string filename = "data2.out";
-    write_to_file(filename,analyt_eigvec,analyt_eigval,iters,size);
-    */
-
-    delete[] eigvals;
-    for (int i=0;i<size;i++){
-        delete[] eigvectors[i];
-        delete[] array[i];
+    for (int i=0; i<size; i++){
+        if ((X(i)-analyt_eigval[i])<1e-8){
+            REQUIRE( true );
+        }
     }
+    
 
     /* Second case: Checks if differnce between 
     numerical and analytical solution is within 
     the given tolerance for another arbitrary 
     matrix A */
+
+
+    int N = 3;
+    double* eiva;
+    double** eive;
     
-    arma::mat A(3,3);
-    A.zeros();
-    A(0,0) = 2;
-    A(1,1) = 3;
-    A(1,2) = 4;
-    A(2,1) = 4;
-    A(2,2) = 9;
+    eiva = new double[size];
+    eive = new double*[size];
+    for (int i=0;i<N;i++){
+        eive[i] = new double[size];
+        eiva[i] = 0;
+    }
 
-    arma::vec evalues;
-    arma::mat evectors;
+    for (int i = 0;i<N;i++){
+        for (int j = 0;j<N;j++){
+            if (i!=j){
+                eive[i][j] = 0;
+            }else{
+                eive[i][j] = 1;
+            }
+        }
+    }
 
-    arma::eig_sym(evalues, evectors, A);
+    double** test_matrix;
+    test_matrix = new double*[N];
+    for (int i=0;i<N;i++){
+        test_matrix[i] = new double[size];
+    }
+    test_matrix[0][0] = 2;
+    test_matrix[1][1] = 3;
+    test_matrix[1][2] = 4;
+    test_matrix[2][1] = 4;
+    test_matrix[2][2] = 9;
 
 
+    iters = jacobi_rotate(test_matrix,eiva,eive,N,max_iter,tolerance);   
 
-    REQUIRE( true );
+    double* val;
+    val = new double[N];
+    val[0] = 1;
+    val[1] = 2;
+    val[2] = 11;
+
+    for (int i=0; i<N; i++){
+        if (abs(val[i] - eiva[i])<1e-8){
+            REQUIRE( true );
+        }
+    } 
+
+    /*
+    Third case: Checks orthonormality of transformed matrices 
+    */
+
+   double count = 0;
+   double prod = 0;
+   for (int i=0; i<size; i++){
+       for (int j=0; j<size; j++){
+            prod = eigvectors[j][i]*eigvectors[j][i];
+        count = count + prod;
+       }
+   }
+   // every columnvectors inner product should yield 1 
+   REQUIRE (abs(count-100.0)<1e-8);
+
+
+   delete[] eigvals;
+   for (int i=0;i<size;i++){
+       delete[] eigvectors[i];
+       delete[] array[i];
+    }
+
+    
 }
