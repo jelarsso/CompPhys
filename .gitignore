@@ -3,6 +3,8 @@
 *.pdf
 *.data
 
+catch.hpp
+
 # Compiled Object files
 *.slo
 *.lo
