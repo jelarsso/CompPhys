@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import subprocess as sb
 from IPython import embed
 
 def analytical_solution(N):
@@ -17,6 +18,10 @@ def analytical_solution(N):
     for i in range(1,N+1):
         anal_eigvector[i-1] = np.sin(i*j*np.pi/(N+1))
     return anal_eigvals,anal_eigvector
+
+
+sb.run(["./main.o", "100","1e-8"])
+sb.run(["./arma.o", "100"])
 
 data  = np.loadtxt("data.out",skiprows=1)
 

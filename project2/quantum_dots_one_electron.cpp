@@ -7,7 +7,7 @@
 int main(int argc, char *argv[]){
     int size = std::atoi(argv[1]);
     double tol = std::atof(argv[2]);
-    //double rho_max = std::atof(argv[3]);
+    //double rho_max = std::atof(argv[3]); for testing different rho_maxes.
     int iters;
     
 
