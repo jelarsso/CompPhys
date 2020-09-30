@@ -6,18 +6,21 @@ from IPython import embed
 
 
 def e2b_number_of_iterations():
+    """
+    Finds the number of iterations needed in the jacobi rotation algorithm, and plots them.
+    """
     n_vals = []
     iterations_needed = []
     legend = []
     fig,ax = plt.subplots(1,1)
-    for i,tol in enumerate([1e-6]):
+    for i,tol in enumerate([1e-6,1e-8,1e-16,1e-32]):
         for n in range(200):
             n_vals.append(n)
-            result = sb.run(["./main.out", str(n), str(tol)],capture_output=True)
+            result = sb.run(["./main.o", str(n), str(tol)],capture_output=True)
             iterations_needed.append(int(result.stdout))
         ax.plot(n_vals,iterations_needed)
         legend.append(f"log(tol)={np.log10(tol):.1f}")
-        #iterations_needed = []
+        iterations_needed = []
         n_vals = []
     
     n_vals = range(200)
@@ -27,22 +30,24 @@ def e2b_number_of_iterations():
     ax.set_ylabel("number of iterations needed")
     ax.legend(legend+["theoretical"],loc="upper left")
     plt.show()
-    embed()
 
 
 
 def e2b_armadillo_vs_own():
+    """
+    Times the jacobi_rotation_algorithm vs the armadillo implementation, and plots the results.
+    """
     arma_times = []
     own_times = []
 
     for i in range(1,200):
         print(i)
         start_time = time_ns()
-        sb.run(["./arma.out",str(i)])
+        sb.run(["./arma.o",str(i)])
         arma_times.append((time_ns()-start_time)/1e9)
 
         start_time = time_ns()
-        sb.run(["./main.out",str(i),str(1e-8)])
+        sb.run(["./main.o",str(i),str(1e-8)])
         own_times.append((time_ns()-start_time)/1e9)
     
     plt.plot(arma_times)
@@ -53,7 +58,10 @@ def e2b_armadillo_vs_own():
     plt.show()
 
 def e2c_quantum():
-    data = np.loadtxt("eigen_data.out",skiprows=1)
+    """
+    Find the 10 first eigenvalues from the data file eigen.data. To use this, the program corresponding to quantum_dots_two_electron.cpp must be executed first.
+    """
+    data = np.loadtxt("eigen.data",skiprows=1)
     sortkeys = np.argsort(data[0,:])
     evals = data[0,:][sortkeys]
     evecs = data[1:,:][sortkeys]
@@ -63,7 +71,10 @@ def e2c_quantum():
 
 
 def e2e_two_electron():
-    omega_r = [0.01]#,0.5,1,5]
+    """
+    Find and plot the wave function for the lowest eigenvalue for the two electron problem with varying omega_r
+    """
+    omega_r = [0.01,0.5,1,5]
     first_eig = []
     for omega in omega_r:
         sb.run(["./quantum_two.out",str(400),str(1e-8),str(omega)])
@@ -87,7 +98,7 @@ def e2e_two_electron():
     plt.savefig("figs/wave_two_lowomega.pdf",format="pdf")
     plt.show()
 
-
+#Choose one (or all)
 #e2b_armadillo_vs_own()
 #e2b_number_of_iterations()
 #e2c_quantum()
