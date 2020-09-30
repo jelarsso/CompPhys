@@ -6,12 +6,22 @@
 #include <fstream>
 
 double off_diagonl(double** array, int size){
+    /*
+    double** array, the array to the find the squared sum of the offdiagonal elements
+    int size, the size of the aforementioned array
+
+        Implementation of the function off(A) defined in the article.
+
+    outputs:
+    double: the value of the square root of the sum of the squared off diagonal elements.
+    */
     double sum = 0;
     for (int i=0;i<size;i++){
         for (int j=0;j<size;j++){
             if (j==i){
                 continue;
             }
+            // can be uncommented to make sure that the array stays symmetric, does however not seem to be compatible with catch so it is commented.
             //if (array[i][j] != array[j][i]){
             //    throw std::runtime_error("Array not symmetric!");
             //}
@@ -22,6 +32,19 @@ double off_diagonl(double** array, int size){
 };
 
 void rotate(double** array, double** eigvectors, int size, int l, int k, double c, double s){
+    /*
+    Inputs:
+    double** array, the array to perform one single rotation on. a 2d array of size equal to the parameter size
+    double** eigvectors, the 2d array representing the eigenvectors of the same shape as array
+    int size, the size of the array
+    int l,k: the array element to perform the rotation around
+    double c,s: the amount to rotate (c = cos theta and s = sin theta, where theta is the rotation angle)
+
+        Performs a single rotation of the matrix around element (l,k).
+    
+    outputs:
+    (none)
+    */
     double akk,all,akl,aik,ail,eig_ik,eig_il;
 
     akk = array[k][k];
@@ -66,6 +89,10 @@ int jacobi_rotate(double** array, double* eigvals, double** eigvectors, int size
     int size: size n of the array
     double tolerance: the tolerance factor in the jacobi jacobi_rotation
 
+        Perform the Jacobi algorithm on the matrix stored in array. The eigenvalues are found in the vector eigvals and eigenvectors are in eigvectors.
+        maxiter is the max number of iterations that will be performed.
+        tolerance is the tolerance of the jacobi algorithm. i.e. the number that is compared with the function off(A) defined in the article.
+
     Output:
     int: the number of iterations that was needed
     */
@@ -73,10 +100,6 @@ int jacobi_rotate(double** array, double* eigvals, double** eigvectors, int size
     int k = 1;
     int l = 0;
     double tau,t,c,s;
-    //double tau = 0;
-    //double t = 0;
-    //double c = 0;
-    //double s = 0;
 
     while (off_diagonl(array,size)>=tolerance && maxiter>number_of_iterations){
         //find largest value:
@@ -132,7 +155,14 @@ return number_of_iterations;
 
 void write_to_file(std::string filename, double** eigvectors, double* eigvals, int iters, int size){
     /*
-    writes to filename
+    string filename: a string of the filename to store the data in
+    the other parameters are described in jacobi_rotate
+    int iters: the number of iterations from the jacobi rotation.
+
+        writes results to filename. The first line is the number of iterations, the second the eigenvalues, then the next lines are the eigenvectors.
+    
+    outputs:
+    (none)
     */
 
     std::ofstream outfile;
