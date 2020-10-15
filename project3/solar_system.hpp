@@ -4,28 +4,16 @@
 #define SOLAR_SYSTEM_H
 
 
-class SolarSystem{
-    private:
-    arma::Cube<double>* positions;
-    arma::Cube<double>* velocities;
-    arma::Mat<double>* initial_positions;
-    arma::Mat<double>* initial_velocities;
-    arma::Row<double>* masses;
-    int number_of_bodies;
-    int dims;
-
-    void Verlet_step(int number_of_timesteps, int dt);
-    void Euler_step(int number_of_timesteps, int dt);
-    arma::Mat<double> force(arma::Mat<double> positions);
-
-    public:
-    SolarSystem(int number_of_bodies, int dims);
-    ~SolarSystem();
-    void read_state(std::string filename);
-    void solve(int number_of_timesteps, int dt, bool method);
-    void write_result(std::string filename);
-};
 
 
+void read_inital_condition(std::string filename,int body_index, arma::Col<double>* initial_position, arma::Col<double>* initial_velocity);
+void read_initial_conditions(std::string filename, int number_of_bodies, int body_indices[], arma::Mat<double>* initial_position, arma::Mat<double>* initial_velocity);
+
+void Euler(int number_of_timesteps, double dt, int number_of_bodies, arma::Col<double> masses, arma::Mat<double>* initial_positions, arma::Mat<double>* initial_velocities, arma::Cube<double>* positions, arma::Cube<double>* velocities);
+void VelocityVerlet(int number_of_timesteps, double dt, int number_of_bodies, arma::Col<double> masses, arma::Mat<double>* initial_positions, arma::Mat<double>* initial_velocities, arma::Cube<double>* positions, arma::Cube<double>* velocities);
+
+arma::Mat<double> force(int number_of_bodies,arma::Col<double> masses, arma::Mat<double> positions);
+
+void write_to_file(int dims, int number_of_bodies, int number_of_timesteps, arma::Cube<double> positions, std::string filename);
 
 #endif
