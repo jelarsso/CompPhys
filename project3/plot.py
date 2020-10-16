@@ -4,7 +4,8 @@ from IPython import embed
 
 
 data = np.loadtxt("output.data")
-v = data.reshape((10000,2,3))
+timesteps,bodies3 = data.shape
+v = data.reshape((timesteps,bodies3//3,3))
 
 earthpos = np.zeros((3,))
 
@@ -15,4 +16,6 @@ plt.plot(v[:,1,0],v[:,1,1])
 plt.plot(v[:,0,0],v[:,0,1],"rx")
 #print(v)
 #plt.plot(np.linalg.norm(earthpos,axis=1))
+ax = plt.gca()
+ax.set_aspect("equal")
 plt.show()

@@ -5,8 +5,12 @@
 
 
 int main(int argv, char *argc[]){
-    int timesteps = std::atoi(argc[1]);
+    double simulation_length = std::atof(argc[1]);
     double dt = std::atof(argc[2]);
+
+    int timesteps = (int)(simulation_length/dt);
+
+    std::cout << "T = " << simulation_length << " dt = " << dt << " timesteps = " << timesteps << "\n" ;
 
     std::string filename = "initial_conditions.data";
     int number_of_bodies = 2;
@@ -18,7 +22,7 @@ int main(int argv, char *argc[]){
 
     arma::Cube<double> pos(dims,number_of_bodies,timesteps, arma::fill::zeros);
     arma::Cube<double> vel(dims,number_of_bodies,timesteps, arma::fill::zeros);
-    arma::Col<double> masses = {330000,1};
+    arma::Col<double> masses = {337000,1};
 
     inital_pos(0,1) = 1;
     inital_vel(1,1) = 2*3.14159265358979*std::sqrt(masses(0)/1);
