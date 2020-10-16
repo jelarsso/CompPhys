@@ -66,10 +66,10 @@ void VelocityVerlet(int number_of_timesteps, double dt, int number_of_bodies, ar
 
     for (int i=1;i<number_of_timesteps;i++){
         positions->slice(i) = positions->slice(i-1) + (velocities->slice(i-1))*dt + (0.5*dt*dt)*prev_force;
-        positions->slice(i).col(0).zeros();//zero out sun
+        //positions->slice(i).col(0).zeros();//zero out sun
         this_force = force(number_of_bodies,masses,positions->slice(i));
         velocities->slice(i) = velocities->slice(i-1) + (0.5*dt)*(prev_force + this_force);
-        velocities->slice(i).col(0).zeros();//zero out sun
+        //velocities->slice(i).col(0).zeros();//zero out sun
 
         prev_force = this_force;
     }

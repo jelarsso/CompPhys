@@ -11,9 +11,9 @@ earthpos = np.zeros((3,))
 
 #earthpos = v[:,1,:] - v[:,0,:]
 
-#for i in range(1):
-plt.plot(v[:,1,0],v[:,1,1])
-plt.plot(v[:,0,0],v[:,0,1],"rx")
+for i in range(bodies3//3):
+    plt.plot(v[:,i,0],v[:,i,1])
+#plt.plot(v[:,0,0],v[:,0,1],"rx")
 #print(v)
 #plt.plot(np.linalg.norm(earthpos,axis=1))
 ax = plt.gca()
