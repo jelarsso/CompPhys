@@ -5,15 +5,19 @@
 #include<cmath>
 
 const double pi = 3.14159265358979;
+const double sun_mass = 332946.0487; // in units of earth masses
+const double G = 4*pi*pi/sun_mass;
 
-void read_inital_condition(std::string filename,int body_index, arma::Col<double>* initial_position, arma::Col<double>* initial_velocity){
+void read_inital_condition(std::string filename,int body_index, double* mass, arma::Col<double>* initial_position, arma::Col<double>* initial_velocity){
     std::ifstream input_file;
     input_file.open(filename);
     std::string line;
     if (input_file.is_open()){
-        for(int i=0;i<=3*body_index;i++){
+        for(int i=0;i<=4*body_index;i++){
             getline(input_file,line);
         }
+        getline(input_file,line);
+        *mass = stod(line.substr(4,14));
         getline(input_file,line);
         for (int i=0;i<3;i++){
             initial_position->at(i) = stod(line.substr(3+(i*26),3+(i*26)+21));
@@ -28,13 +32,15 @@ void read_inital_condition(std::string filename,int body_index, arma::Col<double
 
 
 
-void read_initial_conditions(std::string filename, int number_of_bodies, int body_indices[], arma::Mat<double>* initial_positions, arma::Mat<double>* initial_velocities){
+void read_initial_conditions(std::string filename, int number_of_bodies, int body_indices[], arma::Col<double>* masses, arma::Mat<double>* initial_positions, arma::Mat<double>* initial_velocities){
     arma::Col<double> initial_velocity(3);
     arma::Col<double> initial_position(3);
+    double mass;
     for (int i=0;i<number_of_bodies;i++){
-        read_inital_condition(filename, body_indices[i], &initial_position, &initial_velocity);
+        read_inital_condition(filename, body_indices[i], &mass, &initial_position, &initial_velocity);
         initial_positions->col(i) = initial_position;
         initial_velocities->col(i) = initial_velocity;
+        masses->at(i) = mass;
     }
 };
 
@@ -42,7 +48,7 @@ arma::Mat<double> force(int number_of_bodies,arma::Col<double> masses, arma::Mat
     int dims = 3;
     arma::Mat<double> forces(dims,number_of_bodies,arma::fill::zeros);
     arma::Cube<double> all_forces(dims,number_of_bodies,number_of_bodies,arma::fill::zeros);
-    double G = 4*pi*pi;
+    
 
     for (int objA=0;objA<number_of_bodies;objA++){
         for (int objB=0; objB<objA;objB++){
