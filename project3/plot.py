@@ -6,9 +6,8 @@ from IPython import embed
 data = np.loadtxt("output.data")
 timesteps,bodies3 = data.shape
 v = data.reshape((timesteps,bodies3//3,3))
-
 earthpos = np.zeros((3,))
-
+embed()
 #earthpos = v[:,1,:] - v[:,0,:]
 
 for i in range(bodies3//3):
