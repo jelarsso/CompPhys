@@ -26,7 +26,7 @@ int main(int argv, char *argc[]){
 
     SolarSystem sol(2,1,indices,beta,false,true);
     sol.set_initial_conditions(init_pos,init_vel,masses);
-    sol.Euler(timesteps,dt);
+    sol.VelocityVerlet(timesteps,dt);
     sol.write_to_file("output.data");
 
     return 0;

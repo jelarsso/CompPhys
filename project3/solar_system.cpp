@@ -136,7 +136,7 @@ void SolarSystem::Euler(int number_of_timesteps, double dt_length){
     if (stationary_sun==false){
     for (int i=1;i<number_of_timesteps;i++){
         positions.slice(i) = positions.slice(i-1) + dt*velocities.slice(i-1);
-        velocities.slice(i) = velocities.slice(i-1) + dt*force(positions.slice(i));
+        velocities.slice(i) = velocities.slice(i-1) + dt*force(positions.slice(i-1));
     }}else{
     for (int i=1;i<number_of_timesteps;i++){
         positions.slice(i) = positions.slice(i-1) + dt*velocities.slice(i-1);
