@@ -9,11 +9,13 @@ const double sun_mass = 332946.0487; // in units of earth masses
 const double G1 = 4*pi*pi;
 const double G = 4*pi*pi/sun_mass;
 
-SolarSystem::SolarSystem(int dim, int nbodies, int *bindices, bool set_initial_conditions_manually, bool stationary_s){
+SolarSystem::SolarSystem(int dim, int nbodies, int *bindices, double beta_value, bool set_initial_conditions_manually, bool stationary_s){
     dims = dim;
     number_of_bodies = nbodies;
     body_indices = bindices;
     
+
+    beta = beta_value;
     stationary_sun = stationary_s;
 
     initial_positions = arma::Mat<double>(dims,number_of_bodies, arma::fill::zeros);
@@ -70,7 +72,6 @@ arma::Mat<double> SolarSystem::force(arma::Mat<double> positions){
     arma::Mat<double> forces(dims,number_of_bodies,arma::fill::zeros);
     arma::Cube<double> all_forces(dims,number_of_bodies,number_of_bodies,arma::fill::zeros);
     
-
     for (int objA=0;objA<number_of_bodies;objA++){
         for (int objB=0; objB<objA;objB++){
             double distAB = arma::norm(positions.col(objA) - positions.col(objB));
@@ -89,12 +90,16 @@ arma::Mat<double> SolarSystem::stat_sun_force(arma::Mat<double> positions){
     arma::Mat<double> forces(dims,number_of_bodies,arma::fill::zeros);
     for (int objA=0;objA<number_of_bodies;objA++){
         double distA = arma::norm(positions.col(objA));
-        forces.col(objA) = -G1*(positions.col(objA))/std::pow(distA,3);
+        forces.col(objA) = -G1*(positions.col(objA))/std::pow(distA,(1+beta));
+    }
+    if (number_of_bodies>1){
+        forces = forces + force(positions);
     }
     return forces;
 };
 
-void SolarSystem::VelocityVerlet(int number_of_timesteps, double dt){
+void SolarSystem::VelocityVerlet(int number_of_timesteps, double dt_length){
+    dt = dt_length;
     timesteps = number_of_timesteps;
     positions = arma::Cube<double> (dims,number_of_bodies,timesteps,arma::fill::zeros);
     velocities = arma::Cube<double> (dims,number_of_bodies,timesteps,arma::fill::zeros);
@@ -121,7 +126,8 @@ void SolarSystem::VelocityVerlet(int number_of_timesteps, double dt){
 };
 
 
-void SolarSystem::Euler(int number_of_timesteps, double dt){
+void SolarSystem::Euler(int number_of_timesteps, double dt_length){
+    dt = dt_length;
     timesteps = number_of_timesteps;
     positions = arma::Cube<double>(dims,number_of_bodies,timesteps,arma::fill::zeros);
     velocities = arma::Cube<double>(dims,number_of_bodies,timesteps,arma::fill::zeros);
@@ -142,10 +148,14 @@ void SolarSystem::write_to_file(std::string filename){
     std::ofstream output_file;
     output_file.open(filename);
 
+    output_file << "# timesteps: " << timesteps << " dt: " << dt << " nbodies: " << number_of_bodies << " dims: " << dims << "\n";
+    output_file << "#each column corresponds to for x11 v11 x21 v21 (x31) (v31) x12 v12 x22 v22 (x32) v(32) ... for each body\n"; 
     for (int k = 0; k<timesteps; k++){
         for (int j = 0;j<number_of_bodies; j++){
             for (int i = 0;i<dims; i++){
                 output_file << positions(i,j,k);
+                output_file << " ";
+                output_file << velocities(i,j,k);
                 output_file << " ";
             }
             output_file << " ";
