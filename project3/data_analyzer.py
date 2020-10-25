@@ -117,7 +117,11 @@ def t3d_kepler_second():
         for i in range(timesteps//area_timesteps):
             sums[i] = np.sum(triangles[i*area_timesteps:(i+1)*area_timesteps-1])
 
+        print(len(sums))
         plt.plot(sums)
+        plt.title('Covered area for each time-step (Initial velocity = X$\pi$AU/yr)')
+        plt.xlabel('Step number / n'); plt.ylabel('Covered area dA over last time-step dt')
+        #plt.ylim(0, 5e-2)
         plt.show()
 
 
@@ -135,16 +139,31 @@ def t3e_beta():
 
 
 def t3f_esacpe():
-    dt = 1e-4
-    sim_length = 10
+    dt = 1e-2
+    sim_length = 100
     v = [2*np.pi,2.5*np.pi,2.8*np.pi,3*np.pi]
     beta = 2
 
+    """
     for v0 in v:
         sb.run(["./verlet_es_v0_beta",str(sim_length),str(dt),str(v0),str(beta)])
         pos,vel,timesteps,*d = read_output("output.data")
         plt.plot(pos[::100,0,0],pos[::100,0,1])
         plt.show()
+    """
+    v0 = 2.9*np.pi
+    check = False
+    h = 1e-2
+    while check==False:
+        sb.run(["./verlet_es_v0_beta",str(sim_length),str(dt),str(v0),str(beta)])
+        pos,vel,timesteps,*d = read_output("output.data")
+        v0 = v0-h
+        vr = np.dot(vel[:, 0, :], pos[:, 0, :].T) / np.linalg.norm(pos[:, 0, :], axis=1)  
+        check = np.any(vr[0]<0)
+        
+    print('Calculated escape-velocity: ', v0, 'AU/yr')
+    print('Excact escape-velocity: ', np.sqrt(8*np.pi**2), 'AU/yr')
+    print('Relative error', (np.sqrt(8*np.pi**2) - v0)/np.sqrt(8*np.pi**2))
 
 def t3g_tbp():
     dt = 1e-4
@@ -161,7 +180,7 @@ def t3g_tbp():
     
 if __name__=="__main__":
     #t3c_different_dt()
-    #t3d_kepler_second()
+    t3d_kepler_second()
     #t3e_beta()
     #t3f_esacpe()
-    t3g_tbp()
+    #t3g_tbp()
