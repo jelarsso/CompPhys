@@ -1,19 +1,18 @@
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 #include "solar_system.hpp"
-#include<string>
 #include<armadillo>
+#include<cmath>
+
+const double pi = 3.14159265358979;
 
 
+TEST_CASE() {
 
-int main(int argv, char *argc[]){
-    /*
-    Simulates the Earth's orbit around the sun starting at (1,0)AU with velcoity (0,start_vel)AU/year.
-    The command line arguments are, simulation_length (in years), dt (timestep-length in years), start_vel (the initial velcoity in the y direction), 
-    beta (the parameter for modified gravity).
-    */
-    double simulation_length = std::atof(argc[1]);
-    double dt = std::atof(argc[2]);
-    double start_vel = std::atof(argc[3]);
-    double beta = 2; // std::atof(argc[4]);
+    double simulation_length = 3;
+    double dt = 1e-4;
+    double start_vel = 2*pi;
+    double beta = 2; 
     int timesteps = (int)(simulation_length/dt)+1;
     int *indices;
     indices = new int[1];
@@ -32,7 +31,10 @@ int main(int argv, char *argc[]){
     SolarSystem sol(2,1,indices,beta,false,true);
     sol.set_initial_conditions(init_pos,init_vel,masses);
     sol.VelocityVerlet(timesteps,dt);
-    sol.write_to_file("output.data");
 
-    return 0;
-}
+    arma::Cube<double> position = sol.get_pos();
+    for (int i = 0; i<timesteps; i++){
+        REQUIRE(std::abs(position(0, 0, i)*position(0, 0, i) + position(1, 0, i)*position(1, 0, i)) - 1 < 0.01);
+    }
+    
+};

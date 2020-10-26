@@ -25,6 +25,7 @@ class SolarSystem{
     void read_initial_condition(std::string filename,int body_index, double* mass,arma::Col<double>* initial_position, arma::Col<double>* initial_velocity);
     arma::Mat<double> force(arma::Mat<double> positions);
     arma::Mat<double> stat_sun_force(arma::Mat<double> positions);
+    arma::Mat<double> mercury_force(arma::Mat<double> positions, arma::Mat<double> velocities);
     void read_initial_conditions(std::string filename);
 
     public:
@@ -33,9 +34,14 @@ class SolarSystem{
 
     void get_init();
     void set_initial_conditions(arma::Mat<double> initial_positions, arma::Mat<double> initial_velocities, arma::Col<double> mass);
+    void set_initial_conditions(arma::Col<double> mass);
+
+    arma::Cube<double> get_pos();
 
     void Euler(int number_of_timesteps, double dt);
     void VelocityVerlet(int number_of_timesteps, double dt);
+    void VelocityVerletMercury(int number_of_timesteps, double dt_length);
+
 
     void write_to_file(std::string filename);
     
@@ -43,7 +49,7 @@ class SolarSystem{
     
 };
 
-/*
+/*LEGACY CODE: Function implementations.
 void read_inital_condition(std::string filename,int body_index, double* mass, arma::Col<double>* initial_position, arma::Col<double>* initial_velocity);
 void read_initial_conditions(std::string filename, int number_of_bodies, int body_indices[], arma::Col<double>* masses, arma::Mat<double>* initial_position, arma::Mat<double>* initial_velocity);
 
