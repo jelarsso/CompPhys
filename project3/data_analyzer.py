@@ -225,7 +225,7 @@ def t3e_beta():
 def t3f_esacpe():
     """
     Sets initial conditions so that Earth escapes the gravitational potential. Continously 
-    simuhome/Documents/armadillo-9.900.3/include -DARMA_DONT_USE_WRAPPER -lblas -llalates Earth-Sun systems until the Earth no longer escapes. 
+    simulates Earth-Sun systems until the Earth no longer escapes. 
 
     Output: Prints calculated velocity, exact escape velocity and relative error.  
     """
@@ -325,6 +325,14 @@ def t3i_mercury():
     plt.ylabel("precessesion of perihelion [arcseconds]") 
 
 def t3h_finmod():
+    """
+    Simulates a solar system with the Sun, all planets and Pluto. 
+
+    Output: 
+    Plot of all orbits.
+    Plot of distance from Earth to Sun over the time of the simulation. 
+    Plot of distance from Earth to mass center over the time of the simulation.
+    """
     dt = 5e-5
     sim_length = 60
 
@@ -362,8 +370,5 @@ if __name__=="__main__":
     #t3e_beta()
     #t3f_esacpe()
     #t3g_tbp()
-<<<<<<< HEAD
-=======
     #t3i_mercury()
->>>>>>> a08af001acd71b8e741a060d453df398f4ea59e7
     #t3h_finmod()
