@@ -377,5 +377,4 @@ if __name__=="__main__":
     #t3e_beta()
     #t3f_esacpe()
     #t3g_tbp()
-    #t3i_mercury()
     #t3h_finmod()

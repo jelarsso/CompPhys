@@ -38,6 +38,8 @@ class SolarSystem{
     void set_initial_conditions(arma::Mat<double> initial_positions, arma::Mat<double> initial_velocities, arma::Col<double> mass);
     void set_initial_conditions(arma::Col<double> mass);
 
+    arma::Cube<double> get_pos();
+
     void Euler(int number_of_timesteps, double dt);
     void VelocityVerlet(int number_of_timesteps, double dt);
     void VelocityVerletMercury(int number_of_timesteps, double dt_length);

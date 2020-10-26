@@ -349,6 +349,10 @@ void SolarSystem::get_init(){
     masses.print();
 };
 
+arma::Cube<double> SolarSystem::get_pos(){
+    return positions;
+};
+
 arma::Mat<double> SolarSystem::get_init_pos(){
     /*
         
