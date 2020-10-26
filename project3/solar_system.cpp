@@ -353,6 +353,27 @@ arma::Cube<double> SolarSystem::get_pos(){
     return positions;
 };
 
+arma::Mat<double> SolarSystem::get_init_pos(){
+    /*
+        
+        Return the initial postions of the system. Mainly used for debugging purposes.
+
+    */
+    return initial_positions;
+};
+
+arma::Mat<double> SolarSystem::get_init_vel(){
+    /*
+        
+        Return the initial velocities of the system. Mainly used for debugging purposes.
+
+    */
+    return initial_velocities;
+};
+
+
+
+
 SolarSystem::~SolarSystem(){
     /*
     Destructor for the class.

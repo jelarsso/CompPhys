@@ -33,6 +33,8 @@ class SolarSystem{
     ~SolarSystem();
 
     void get_init();
+    arma::Mat<double> get_init_pos();
+    arma::Mat<double> get_init_vel();
     void set_initial_conditions(arma::Mat<double> initial_positions, arma::Mat<double> initial_velocities, arma::Col<double> mass);
     void set_initial_conditions(arma::Col<double> mass);
 
