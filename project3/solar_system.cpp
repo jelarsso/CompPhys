@@ -165,6 +165,14 @@ void SolarSystem::write_to_file(std::string filename){
     output_file.close();
 };
 
+void SolarSystem::change_reference_to_cm(){
+    arma::Col<double> vel_cm = initial_velocities*masses /arma::sum(masses);
+    for (int i=0; i<number_of_bodies; i++){
+        initial_velocities.col(i) -= vel_cm;
+    };
+    
+};
+
 
 void SolarSystem::get_init(){
     initial_positions.print();

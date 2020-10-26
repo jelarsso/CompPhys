@@ -102,6 +102,13 @@ def t3c_different_dt():
 
 
 def t3d_kepler_second():
+    """
+    Simulates the Earth-Sun system with three different initial velocities. 
+    Breaks the simulations into time-intervals, and sums the covered area between
+    Earth and the Sun in those intervals. 
+
+    Output: One plot of the covered area for each time interval
+    """
     dt = 1e-5
     sim_length = 2
     area_timesteps = 1000
@@ -139,6 +146,12 @@ def t3e_beta():
 
 
 def t3f_esacpe():
+    """
+    Sets initial conditions so that Earth escapes the gravitational potential. Continously 
+    simuhome/Documents/armadillo-9.900.3/include -DARMA_DONT_USE_WRAPPER -lblas -llalates Earth-Sun systems until the Earth no longer escapes. 
+
+    Output: Prints calculated velocity, exact escape velocity and relative error.  
+    """
     dt = 1e-2
     sim_length = 100
     v = [2*np.pi,2.5*np.pi,2.8*np.pi,3*np.pi]
@@ -159,14 +172,59 @@ def t3f_esacpe():
     print('Relative error', (np.sqrt(8*np.pi**2) - v0)/np.sqrt(8*np.pi**2))
 
 def t3g_tbp():
-    dt = 1e-4
-    sim_length = 12
+    dt = 5e-5
+    sim_length = 60
 
     sb.run(["./tbp",str(sim_length),str(dt)])
     pos,vel,*d = read_output("output.data")
 
-    for i in range(2):
+    plt.figure()
+    for i in range(3):
         plt.plot(pos[:,i,0],pos[:,i,1])
+    plt.title('Orbit of the Sun')
+    plt.xlabel('Distance / AU'); plt.ylabel('Distance / AU')
+    plt.gca().set_aspect("equal")
+
+
+    dist = pos[:,0,:]-pos[:,2,:]
+    dist = np.linalg.norm(dist, axis=1)
+    plt.figure()
+    plt.plot(np.linspace(0, sim_length, int(sim_length/dt)+1), dist)
+    plt.title('Distance between Earth and the Sun')
+    plt.xlabel('Time / yr'); plt.ylabel('Distance / AU')
+
+
+    plt.figure()
+    plt.plot(np.linspace(0, sim_length, int(sim_length/dt)+1), np.linalg.norm(pos[:,0,:], axis=1))
+    plt.title('Distance between the Earth and the origin')
+    plt.xlabel('Time / yr'); plt.ylabel('Distance / AU')
+    plt.show()
+
+
+
+def t3h_finmod():
+    dt = 5e-5
+    sim_length = 60
+
+    sb.run(["./finalmod",str(sim_length),str(dt)])
+    pos,vel,*d = read_output("output.data")
+
+    #r = 40
+    for i in range(10):
+        plt.plot(pos[:,i,0],pos[:,i,1])
+    #plt.xlim(-r, r); plt.ylim(-r, r)
+
+    dist = pos[:,0,:]-pos[:,3,:]
+    dist = np.linalg.norm(dist, axis=1)
+    plt.figure()
+    plt.plot(dist)
+
+    plt.figure()
+    plt.gca().set_aspect("equal")
+    plt.grid()
+    plt.title('Final model of the solar system')
+    plt.xlabel('Distance / AU'); plt.ylabel('Distance / AU')
+    plt.legend(['Sun', 'Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
     plt.show()
 
 
@@ -175,5 +233,6 @@ if __name__=="__main__":
     #t3c_different_dt()
     #t3d_kepler_second()
     #t3e_beta()
-    t3f_esacpe()
-    #t3g_tbp()
+    #t3f_esacpe()
+    t3g_tbp()
+    #t3h_finmod()
