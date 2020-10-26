@@ -46,6 +46,7 @@ def t3c_different_dt():
     This functions runs the earth_sun_system simulations according to 3c. 
     Simulates the earth-sun system for many different timestep-lengths.
     Generates the plots for postions, energies and simulation wall-time.
+    Compile: earth_sun_system.cpp one using Euler integration to "euler_earth_sun" and one using Verlet to "verlet_earth_sun"
     """
     dts = [1,1e-1,1e-2,1e-3,1e-6,1e-5,1e-4]
     sim_length = 10
@@ -57,11 +58,11 @@ def t3c_different_dt():
 
     for dt in dts:
         start_t = time.time_ns()
-        sb.run(["./euler_earth_sun",str(sim_length),str(dt)])
+        sb.run(["./euler_earth_sun",str(sim_length),str(dt),str(start_vel),str(2)])
         euler_timings.append((time.time_ns()-start_t)*1e-9)
         euler_pos,euler_vel,*_ = read_output("output.data")
         start_t = time.time_ns()
-        sb.run(["./verlet_earth_sun",str(sim_length),str(dt)])
+        sb.run(["./verlet_earth_sun",str(sim_length),str(dt),str(start_vel),str(2)])
         verlet_timings.append((time.time_ns()-start_t)*1e-9)
         verlet_pos,verlet_vel,*_ = read_output("output.data")
 
@@ -124,6 +125,7 @@ def t3d_kepler_second():
     Simulates the Earth-Sun system with three different initial velocities. 
     Breaks the simulations into time-intervals, and sums the covered area between
     Earth and the Sun in those intervals. 
+    Compile: earth_sun_system.cpp to verlet_earth_sun_start_vel
 
     Output: One plot of the covered area for each time interval
     """
@@ -134,7 +136,7 @@ def t3d_kepler_second():
 
     start_vels = [2*np.pi,np.pi,2.5*np.pi]
     for start_vel in start_vels:
-        sb.run(["./verlet_earth_sun_start_vel",str(sim_length),str(dt),str(start_vel)])
+        sb.run(["./verlet_earth_sun_start_vel",str(sim_length),str(dt),str(start_vel),str(2)])
         pos,vel,timesteps,*d = read_output("output.data")
 
         triangles = 1/2*(pos[:-1,0,0]*pos[1:,0,1] - pos[:-1,0,1]*pos[1:,0,0])
@@ -153,6 +155,10 @@ def t3d_kepler_second():
 
 
 def t3e_beta():
+    """
+    Simulate the earth sun system with different values for beta and generate plots.
+    Compile: earth_sun_system.cpp to "verlet_es_v0_beta"
+    """
     dt = 1e-5
     sim_length = 10
     start_vel = 5
@@ -225,7 +231,8 @@ def t3e_beta():
 def t3f_esacpe():
     """
     Sets initial conditions so that Earth escapes the gravitational potential. Continously 
-    simuhome/Documents/armadillo-9.900.3/include -DARMA_DONT_USE_WRAPPER -lblas -llalates Earth-Sun systems until the Earth no longer escapes. 
+    simulates Earth-Sun systems until the Earth no longer escapes. 
+    Compile: earth_sun_system.cpp
 
     Output: Prints calculated velocity, exact escape velocity and relative error.  
     """
@@ -249,6 +256,10 @@ def t3f_esacpe():
     print('Relative error', (np.sqrt(8*np.pi**2) - v0)/np.sqrt(8*np.pi**2))
 
 def t3g_tbp():
+    """
+    The three body problem for jupiter.
+    Compile: three_body_problem.cpp with Jupiter and the Earth to tbp_jupiter
+    """
     dt = 1e-8
     sim_length = 2
     jupiter_mass_factors = [1000]
@@ -288,8 +299,12 @@ def t3g_tbp():
         plt.clf()
 
 def t3i_mercury():
+    """
+    Find the apsidal precession of mercury.
+    Compile: mercury_sim.cpp to gr_merc
+    """
     dt = 1e-6
-    sim_length = 400 #number of
+    sim_length = 400
     each_sim = 0.25
     x0 = 0.3075
     y0 = 0
@@ -356,8 +371,8 @@ def t3h_finmod():
 
 if __name__=="__main__":
     #uncomment one or more:
-    
-    #t3c_different_dt()
+
+    t3c_different_dt()
     #t3d_kepler_second()
     #t3e_beta()
     #t3f_esacpe()
