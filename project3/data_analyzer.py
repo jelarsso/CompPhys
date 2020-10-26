@@ -120,6 +120,13 @@ def t3c_different_dt():
 
 
 def t3d_kepler_second():
+    """
+    Simulates the Earth-Sun system with three different initial velocities. 
+    Breaks the simulations into time-intervals, and sums the covered area between
+    Earth and the Sun in those intervals. 
+
+    Output: One plot of the covered area for each time interval
+    """
     dt = 1e-5
     sim_length = 2
     area_timesteps = 1000
@@ -138,8 +145,12 @@ def t3d_kepler_second():
             sums[i] = np.sum(triangles[i*area_timesteps:(i+1)*area_timesteps-1])
 
         plt.plot(sums)
-        plt.show()
-    
+    plt.title('Covered area for each time-interval')
+    plt.xlabel('Interval number / n'); plt.ylabel('Covered area over last time-interval / AU$^2$')
+    plt.legend(['Initial velocity = 2$\pi$AU/yr','Initial velocity = $\pi$AU/yr','Initial velocity = 2.5$\pi$AU/yr'])
+    plt.ylim(0, 5e-2)
+    plt.show()
+
 
 def t3e_beta():
     dt = 1e-5
@@ -212,16 +223,30 @@ def t3e_beta():
 
 
 def t3f_esacpe():
-    dt = 1e-4
-    sim_length = 10
+    """
+    Sets initial conditions so that Earth escapes the gravitational potential. Continously 
+    simuhome/Documents/armadillo-9.900.3/include -DARMA_DONT_USE_WRAPPER -lblas -llalates Earth-Sun systems until the Earth no longer escapes. 
+
+    Output: Prints calculated velocity, exact escape velocity and relative error.  
+    """
+    dt = 1e-2
+    sim_length = 100
     v = [2*np.pi,2.5*np.pi,2.8*np.pi,3*np.pi]
     beta = 2
 
-    for v0 in v:
+    v0 = 2.9*np.pi
+    check = False
+    h = 1e-2
+    while check==False:
         sb.run(["./verlet_es_v0_beta",str(sim_length),str(dt),str(v0),str(beta)])
         pos,vel,timesteps,*d = read_output("output.data")
-        plt.plot(pos[::100,0,0],pos[::100,0,1])
-        plt.show()
+        v0 = v0-h
+        vr = np.dot(vel[:, 0, :], pos[:, 0, :].T) / np.linalg.norm(pos[:, 0, :], axis=1)  
+        check = np.any(vr[0]<0)
+        
+    print('Calculated escape-velocity: ', v0, 'AU/yr')
+    print('Excact escape-velocity: ', np.sqrt(8*np.pi**2), 'AU/yr')
+    print('Relative error', (np.sqrt(8*np.pi**2) - v0)/np.sqrt(8*np.pi**2))
 
 def t3g_tbp():
     dt = 1e-8
@@ -270,7 +295,6 @@ def t3i_mercury():
     y0 = 0
     vx0 = 0
     vy0 = 12.44
-
     apoapsis = []
     time = []
     xy_coord = []
@@ -299,6 +323,30 @@ def t3i_mercury():
     plt.title("Precession of Mercury's orbit with GR-correction")
     plt.xlabel("time [year]")
     plt.ylabel("precessesion of perihelion [arcseconds]") 
+
+def t3h_finmod():
+    dt = 5e-5
+    sim_length = 60
+
+    sb.run(["./finalmod",str(sim_length),str(dt)])
+    pos,vel,*d = read_output("output.data")
+
+    #r = 40
+    for i in range(10):
+        plt.plot(pos[:,i,0],pos[:,i,1])
+    #plt.xlim(-r, r); plt.ylim(-r, r)
+
+    dist = pos[:,0,:]-pos[:,3,:]
+    dist = np.linalg.norm(dist, axis=1)
+    plt.figure()
+    plt.plot(dist)
+
+    plt.figure()
+    plt.gca().set_aspect("equal")
+    plt.grid()
+    plt.title('Final model of the solar system')
+    plt.xlabel('Distance / AU'); plt.ylabel('Distance / AU')
+    plt.legend(['Sun', 'Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])
     plt.show()
 
 
@@ -307,9 +355,12 @@ def t3i_mercury():
 
 
 if __name__=="__main__":
+    #uncomment one or more:
+    
     #t3c_different_dt()
     #t3d_kepler_second()
     #t3e_beta()
     #t3f_esacpe()
-    t3g_tbp()
+    #t3g_tbp()
     #t3i_mercury()
+    #t3h_finmod()

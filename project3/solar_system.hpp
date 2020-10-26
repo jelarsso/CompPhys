@@ -43,6 +43,7 @@ class SolarSystem{
 
     void write_to_file(std::string filename);
     
+    void change_reference_to_cm();
     
 };
 

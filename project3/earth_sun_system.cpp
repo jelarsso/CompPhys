@@ -13,7 +13,7 @@ int main(int argv, char *argc[]){
     double simulation_length = std::atof(argc[1]);
     double dt = std::atof(argc[2]);
     double start_vel = std::atof(argc[3]);
-    double beta = std::atof(argc[4]);
+    double beta = 2; // std::atof(argc[4]);
     int timesteps = (int)(simulation_length/dt)+1;
     int *indices;
     indices = new int[1];
