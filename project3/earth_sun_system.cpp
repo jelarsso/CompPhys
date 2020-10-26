@@ -5,6 +5,11 @@
 
 
 int main(int argv, char *argc[]){
+    /*
+    Simulates the Earth's orbit around the sun starting at (1,0)AU with velcoity (0,start_vel)AU/year.
+    The command line arguments are, simulation_length (in years), dt (timestep-length in years), start_vel (the initial velcoity in the y direction), 
+    beta (the parameter for modified gravity).
+    */
     double simulation_length = std::atof(argc[1]);
     double dt = std::atof(argc[2]);
     double start_vel = std::atof(argc[3]);
