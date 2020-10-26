@@ -117,12 +117,12 @@ def t3d_kepler_second():
         for i in range(timesteps//area_timesteps):
             sums[i] = np.sum(triangles[i*area_timesteps:(i+1)*area_timesteps-1])
 
-        print(len(sums))
         plt.plot(sums)
-        plt.title('Covered area for each time-step (Initial velocity = X$\pi$AU/yr)')
-        plt.xlabel('Step number / n'); plt.ylabel('Covered area dA over last time-step dt')
-        #plt.ylim(0, 5e-2)
-        plt.show()
+    plt.title('Covered area for each time-interval')
+    plt.xlabel('Interval number / n'); plt.ylabel('Covered area over last time-interval / AU$^2$')
+    plt.legend(['Initial velocity = 2$\pi$AU/yr','Initial velocity = $\pi$AU/yr','Initial velocity = 2.5$\pi$AU/yr'])
+    plt.ylim(0, 5e-2)
+    plt.show()
 
 
 def t3e_beta():
@@ -144,13 +144,6 @@ def t3f_esacpe():
     v = [2*np.pi,2.5*np.pi,2.8*np.pi,3*np.pi]
     beta = 2
 
-    """
-    for v0 in v:
-        sb.run(["./verlet_es_v0_beta",str(sim_length),str(dt),str(v0),str(beta)])
-        pos,vel,timesteps,*d = read_output("output.data")
-        plt.plot(pos[::100,0,0],pos[::100,0,1])
-        plt.show()
-    """
     v0 = 2.9*np.pi
     check = False
     h = 1e-2
@@ -180,7 +173,7 @@ def t3g_tbp():
     
 if __name__=="__main__":
     #t3c_different_dt()
-    t3d_kepler_second()
+    #t3d_kepler_second()
     #t3e_beta()
-    #t3f_esacpe()
+    t3f_esacpe()
     #t3g_tbp()
