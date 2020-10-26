@@ -231,8 +231,8 @@ def t3h_finmod():
     
 if __name__=="__main__":
     #t3c_different_dt()
-    #t3d_kepler_second()
+    t3d_kepler_second()
     #t3e_beta()
     #t3f_esacpe()
-    t3g_tbp()
+    #t3g_tbp()
     #t3h_finmod()
