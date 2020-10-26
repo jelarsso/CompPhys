@@ -232,10 +232,7 @@ def t3f_esacpe():
     """
     Sets initial conditions so that Earth escapes the gravitational potential. Continously 
     simulates Earth-Sun systems until the Earth no longer escapes. 
-<<<<<<< HEAD
-=======
     Compile: earth_sun_system.cpp
->>>>>>> 401fd3c94be4ea132933ca83b5bb8dc93e7c5be7
 
     Output: Prints calculated velocity, exact escape velocity and relative error.  
     """
