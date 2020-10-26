@@ -58,11 +58,11 @@ def t3c_different_dt():
 
     for dt in dts:
         start_t = time.time_ns()
-        sb.run(["./euler_earth_sun",str(sim_length),str(dt),str(start_vel),str(2)])
+        sb.run(["./euler_earth_sun",str(sim_length),str(dt),str(2*np.pi),str(2)])
         euler_timings.append((time.time_ns()-start_t)*1e-9)
         euler_pos,euler_vel,*_ = read_output("output.data")
         start_t = time.time_ns()
-        sb.run(["./verlet_earth_sun",str(sim_length),str(dt),str(start_vel),str(2)])
+        sb.run(["./verlet_earth_sun",str(sim_length),str(dt),str(2*np.pi),str(2)])
         verlet_timings.append((time.time_ns()-start_t)*1e-9)
         verlet_pos,verlet_vel,*_ = read_output("output.data")
 
