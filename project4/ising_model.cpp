@@ -13,7 +13,6 @@ int IsingModel::period(int index, int size){
 IsingModel::IsingModel(int number_of_spins, std::string filen){
     n_spins = number_of_spins;
     filename = filen;
-    Init();
 };
 
 void IsingModel::Init(){
@@ -22,7 +21,7 @@ void IsingModel::Init(){
     Energy = 0;
     for (int x = 0; x<n_spins; x++){
         for (int y = 0; y<n_spins; y++){
-            Energy += (double) spin_matrix(x,y)*(spin_matrix(period(x-1,n_spins),y)*spin_matrix(x,period(y-1,n_spins)));
+            Energy -= (double) spin_matrix(x,y)*(spin_matrix(period(x-1,n_spins),y)+spin_matrix(x,period(y-1,n_spins)));
         }
     }
 }
@@ -69,7 +68,10 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
             for (int y = 0; y<n_spins; y++){
                 int ix = (int) (distribution(gen)*(double)n_spins);
                 int iy = (int) (distribution(gen)*(double)n_spins);
-                int deltaE = -2*spin_matrix(ix,iy)*(spin_matrix(period(ix+1,n_spins),iy)+spin_matrix(period(ix-1,n_spins),iy)+spin_matrix(ix,period(iy+1,n_spins))+spin_matrix(ix,period(iy-1,n_spins)));
+                int deltaE = 2*spin_matrix(ix,iy)*(spin_matrix(period(ix+1,n_spins),iy)
+                +spin_matrix(period(ix-1,n_spins),iy)
+                +spin_matrix(ix,period(iy+1,n_spins))
+                +spin_matrix(ix,period(iy-1,n_spins)));
 
                 if (distribution(gen) <= energy_differences(deltaE+8)){
                     spin_matrix(ix,iy)*=-1;
@@ -82,7 +84,7 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
     expectation_values(1) += Energy*Energy;
     expectation_values(2) += Magnetization;
     expectation_values(3) += Magnetization*Magnetization;
-    expectation_values(4) += std::abs(Magnetization);
+    expectation_values(4) += std::fabs(Magnetization);
     }
 
     output(temp);
@@ -97,15 +99,14 @@ void IsingModel::output(double temperature){
     double Maverage = expectation_values(2)*norm;
     double M2average = expectation_values(3)*norm;
     double Mabsaverage = expectation_values(4)*norm;
-    double Evariance = (E2average- Eaverage*Eaverage);
+    double Evariance = (E2average - Eaverage*Eaverage);
     double Mvariance = (M2average - Mabsaverage*Mabsaverage);
     
     if (output_file.is_open() == false){
         output_file.open(filename);
-        output_file << "#n_spins" << n_spins << " n_mc_cycles " << n_mc_cycles << "\n";
+        output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << "\n";
         output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg\n"; 
     }
-
     output_file << std::setprecision(15);
     output_file << temperature << " ";
     output_file << Eaverage << " ";
