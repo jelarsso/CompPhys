@@ -6,7 +6,7 @@ make 2spinnmc:
 	c++ ising_2_spins_mc.cpp ising_model.cpp -o spins2_mc -O3 -I /home/johan/armadillo-9.900.2/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
 
 make pde:
-	c++ ising_2_spins_mc.cpp ising_model.cpp -o spins2_mc -O3 -I /home/johan/armadillo-9.900.2/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
+	c++ ising_pde.cpp ising_model.cpp -o pde -O3 -I /home/johan/armadillo-9.900.2/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
 make testing:
 	c++ ising_testing.cpp ising_model.cpp -o testing -O2 -I /home/johan/armadillo-9.900.2/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
 

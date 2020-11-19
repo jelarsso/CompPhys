@@ -5,7 +5,7 @@ int main(int argc, char* argv[]){
     int nmc;
     std::string filename;
 
-    if (argc != 4){
+    if (argc != 6){
         std::cout << "Bad usage! This program takes 5 params";
         std::cout << "\n name of output file, number of monte carlo cycles, start temperature, stop temperature, and step temperature\n";
         return 1;

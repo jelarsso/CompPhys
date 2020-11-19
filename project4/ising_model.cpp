@@ -19,6 +19,7 @@ IsingModel::IsingModel(int number_of_spins, std::string filen, bool el, bool rc)
 
 void IsingModel::Init(){
     if (!random_conf){
+        
     spin_matrix.ones(n_spins,n_spins);
     }else{
     spin_matrix.randu(n_spins,n_spins)*2 - 1;
@@ -71,6 +72,11 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
     expectation_values.zeros(5);
 
     if (energy_logger==true){
+        if (output_file.is_open() == false){
+        output_file.open(filename);
+        output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << " all values per spin\n";
+        output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg accepted_configs\n"; 
+    }
         output_file << "# Energy logger is ON, performance is reduced, the next line is the energy at every monte carlo cycle ";
     }
 
@@ -122,6 +128,7 @@ void IsingModel::output(double temperature){
         output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << " all values per spin\n";
         output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg accepted_configs\n"; 
     }
+    
     output_file << std::setprecision(15);
     output_file << temperature << " ";
     output_file << Eaverage/n_spins/n_spins << " ";
