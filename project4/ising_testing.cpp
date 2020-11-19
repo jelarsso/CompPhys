@@ -2,9 +2,9 @@
 
 int main(){
 
-    IsingModel mdl(20, "output1.data");
-    for (int N=1; N<1e4+1; N+=100) {
-        mdl.Metropolis(N,0.1);
+    IsingModel mdl(20, "output1.data", false, false);
+    for (int N=1; N<1e3+1; N+=1) {
+        mdl.Metropolis(N,2.4);
     }
     return 0;
 }
