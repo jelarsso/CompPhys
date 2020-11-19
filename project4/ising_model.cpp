@@ -10,15 +10,22 @@ int IsingModel::period(int index, int size){
     return (index+size)%size;
 };
 
-IsingModel::IsingModel(int number_of_spins, std::string filen){
+IsingModel::IsingModel(int number_of_spins, std::string filen, bool el, bool rc){
     n_spins = number_of_spins;
     filename = filen;
+    energy_logger = el;
+    random_conf = rc;
 };
 
 void IsingModel::Init(){
+    if (!random_conf){
     spin_matrix.ones(n_spins,n_spins);
+    }else{
+    spin_matrix.randu(n_spins,n_spins)*2 - 1;
+    }
     Magnetization = (double) arma::accu(spin_matrix);
     Energy = 0;
+    accepted_configs = 0;
     for (int x = 0; x<n_spins; x++){
         for (int y = 0; y<n_spins; y++){
             Energy -= (double) spin_matrix(x,y)*(spin_matrix(period(x-1,n_spins),y)+spin_matrix(x,period(y-1,n_spins)));
@@ -63,6 +70,10 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
     find_energy_differences(temp);
     expectation_values.zeros(5);
 
+    if (energy_logger==true){
+        output_file << "# Energy logger is ON, performance is reduced, the next line is the energy at every monte carlo cycle ";
+    }
+
     for (int cycle = 0; cycle<n_mc_cycles; cycle++){
         for (int x = 0; x<n_spins; x++){
             for (int y = 0; y<n_spins; y++){
@@ -77,6 +88,11 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
                     spin_matrix(ix,iy)*=-1;
                     Magnetization += (double) 2*spin_matrix(ix,iy);
                     Energy += (double) deltaE;
+                    accepted_configs++;
+                }
+
+                if (energy_logger==true){
+                    output_file << Energy/n_spins/n_spins << " ";
                 }
             }
         }
@@ -86,7 +102,6 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
     expectation_values(3) += Magnetization*Magnetization;
     expectation_values(4) += std::fabs(Magnetization);
     }
-
     output(temp);
 };
 
@@ -99,19 +114,20 @@ void IsingModel::output(double temperature){
     double Maverage = expectation_values(2)*norm;
     double M2average = expectation_values(3)*norm;
     double Mabsaverage = expectation_values(4)*norm;
-    double Evariance = (E2average - Eaverage*Eaverage);
-    double Mvariance = (M2average - Mabsaverage*Mabsaverage);
+    double Evariance = (E2average - Eaverage*Eaverage)/n_spins/n_spins;
+    double Mvariance = (M2average - Mabsaverage*Mabsaverage)/n_spins/n_spins;
     
     if (output_file.is_open() == false){
         output_file.open(filename);
-        output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << "\n";
-        output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg\n"; 
+        output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << " all values per spin\n";
+        output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg accepted_configs\n"; 
     }
     output_file << std::setprecision(15);
     output_file << temperature << " ";
-    output_file << Eaverage << " ";
+    output_file << Eaverage/n_spins/n_spins << " ";
     output_file << Evariance/temperature/temperature << " ";
-    output_file << Maverage << " ";
+    output_file << Maverage/n_spins/n_spins << " ";
     output_file << Mvariance/temperature << " ";
-    output_file << Mabsaverage << "\n";
+    output_file << Mabsaverage/n_spins/n_spins << " ";
+    output_file << accepted_configs << "\n";
 };
