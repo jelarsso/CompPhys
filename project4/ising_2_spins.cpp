@@ -17,7 +17,7 @@ int main(int argc, char* argv[]){
         step_temp = std::stod(argv[5]);
     }
 
-    IsingModel mdl(2, filename);
+    IsingModel mdl(2, filename,false,false);
     mdl.Metropolis(nmc,start_temp,stop_temp,step_temp);
     return 0;
 }
