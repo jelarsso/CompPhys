@@ -21,7 +21,18 @@ void IsingModel::Init(){
     if (!random_conf){
     spin_matrix.ones(n_spins,n_spins);
     }else{
-    spin_matrix.randu(n_spins,n_spins)*2 - 1;
+        std::random_device rd1;
+        std::mt19937 l(rd1());
+        std::uniform_int_distribution<int> distribution(0,1);
+
+        arma::Mat<int> spin_matrix(n_spins,n_spins);
+        for (int x = 0; x<n_spins; x++){
+            for (int y = 0; y<n_spins; y++){
+                int a = distribution(l);
+                spin_matrix(x,y)= a*2-1;
+            };
+        };
+    // spin_matrix.randu(n_spins,n_spins)*2 - 1;
     }
     Magnetization = (double) arma::accu(spin_matrix);
     Energy = 0;
