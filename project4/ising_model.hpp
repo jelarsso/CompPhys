@@ -9,7 +9,8 @@
 class IsingModel{
     private:
     arma::Mat<int> spin_matrix;
-    arma::Col<double> energy_differences,expectation_values;
+    arma::Col<double> energy_differences;
+    double expectation_values[5];
     double initial_temp, final_temp, temp_step, last_temp; 
     double Energy, Magnetization;
     int n_spins;

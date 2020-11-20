@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <fstream>
 
-int IsingModel::period(int index, int size){
+inline int IsingModel::period(int index, int size){
     return (index+size)%size;
 };
 
@@ -19,7 +19,6 @@ IsingModel::IsingModel(int number_of_spins, std::string filen, bool el, bool rc)
 
 void IsingModel::Init(){
     if (!random_conf){
-        
     spin_matrix.ones(n_spins,n_spins);
     }else{
     spin_matrix.randu(n_spins,n_spins)*2 - 1;
@@ -69,15 +68,15 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
 
     Init();
     find_energy_differences(temp);
-    expectation_values.zeros(5);
+    for (int i=0;i<5;i++) expectation_values[i]=0;
 
     if (energy_logger==true){
         if (output_file.is_open() == false){
         output_file.open(filename);
         output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << " all values per spin\n";
         output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg accepted_configs\n"; 
-    }
-        output_file << "# Energy logger is ON, performance is reduced, the next line is the energy at every monte carlo cycle ";
+        }
+    output_file << "# Energy logger is ON, performance is reduced, the next line is the energy at every monte carlo cycle \n";
     }
 
     for (int cycle = 0; cycle<n_mc_cycles; cycle++){
@@ -97,16 +96,19 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
                     accepted_configs++;
                 }
 
-                if (energy_logger==true){
-                    output_file << Energy/n_spins/n_spins << " ";
-                }
             }
         }
-    expectation_values(0) += Energy;
-    expectation_values(1) += Energy*Energy;
-    expectation_values(2) += Magnetization;
-    expectation_values(3) += Magnetization*Magnetization;
-    expectation_values(4) += std::fabs(Magnetization);
+    if (energy_logger==true){
+    output_file << Energy/n_spins/n_spins << " ";
+    }
+    expectation_values[0] += Energy;
+    expectation_values[1] += Energy*Energy;
+    expectation_values[2] += Magnetization;
+    expectation_values[3] += Magnetization*Magnetization;
+    expectation_values[4] += std::fabs(Magnetization);
+    }
+    if (energy_logger==true){
+       output_file << "\n";
     }
     output(temp);
 };
@@ -115,11 +117,11 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
 
 void IsingModel::output(double temperature){
     double norm = 1/(double) n_mc_cycles;
-    double Eaverage = expectation_values(0)*norm;
-    double E2average = expectation_values(1)*norm;
-    double Maverage = expectation_values(2)*norm;
-    double M2average = expectation_values(3)*norm;
-    double Mabsaverage = expectation_values(4)*norm;
+    double Eaverage = expectation_values[0]*norm;
+    double E2average = expectation_values[1]*norm;
+    double Maverage = expectation_values[2]*norm;
+    double M2average = expectation_values[3]*norm;
+    double Mabsaverage = expectation_values[4]*norm;
     double Evariance = (E2average - Eaverage*Eaverage)/n_spins/n_spins;
     double Mvariance = (M2average - Mabsaverage*Mabsaverage)/n_spins/n_spins;
     
