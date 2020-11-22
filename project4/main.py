@@ -169,9 +169,110 @@ def p4g():
     L = 100
     Maximum value for C_V at 2.28 for suscep 2.280
     """
+    start_temp = 2.0
+    stop_temp = 2.6
+    step_temp = 0.05
+
+    
+    fig = make_subplots(rows=2, cols=2, subplot_titles=("Average Energy","Mean Magnetization", "Specific heat", "Susceptibility"))
+    
+    
+    sb.run(["./spins", filename, str(n_mc),str(L), str(start_temp),str(stop_temp),str(step_temp)])
+    ns,nmc,data = read_datafile(filename)
+
+    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,1]),row=1,col=1)
+    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,5]),row=1,col=2)
+    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,2]),row=2,col=1)
+    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,4]),row=2,col=2)
+
+    fig.show()   
+
+def equil():  
+    N = np.linspace(1, 1e3, int(1e3))
+
+    f = open("output1.data", "r")
+    f.readline(); f.readline()
+
+    E = np.zeros_like(N)
+    M = np.zeros_like(N)
+    for i in range(int(1e3)):
+        sent = f.readline()
+        words = sent.split()
+        E[i] = words[1]
+        M[i] = words[5]
+
+    fig = make_subplots(rows=2, cols=1, subplot_titles=("Average energy per spin","Average absolute magnetization per spin"), shared_xaxes=True, vertical_spacing=0.1)
+
+    fig.add_trace(go.Scatter(x=N, y=E, name='Average energy per spin'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N,y=M, name='Average absolute magnetization per spin'),row=2,col=1)
+
+    # prøver noe
+
+    f = open("output2.data", "r")
+    f.readline(); f.readline()
+
+    E = np.zeros_like(N)
+    M = np.zeros_like(N)
+    for i in range(int(1e3)):
+        sent = f.readline()
+        words = sent.split()
+        E[i] = words[1]
+        M[i] = words[5]
+
+    fig.add_trace(go.Scatter(x=N, y=E, name='Average energy per spin'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N,y=M, name='Average absolute magnetization per spin'),row=2,col=1)
+
+    # check it
+
+    fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
+    fig.update_yaxes(title_text="Energy / J", row=1, col=1)
+    fig.update_yaxes(title_text="Magnetization / #", row=2, col=1)
+
+    fig.update_layout(font_family="lmodern",font_size=12)
+    fig.update_layout(showlegend=False)
+    fig.write_image("testbror.pdf",width=600*1.41,height=600,scale=2)
+
+    fig.show()
+
+    #fig.write_image("fig1.pdf")
+
+def accept():
+    N = np.linspace(1, 1e3, int(1e3))
+
+    f1 = open("output1.data", "r")
+    f1.readline(); f1.readline()
+    f2 = open("output2.data", "r")
+    f2.readline(); f2.readline()
+
+    acpt1 = np.zeros_like(N)
+    acpt2 = np.zeros_like(N) 
+    for i in range(int(1e3)):
+        sent1 = f1.readline()
+        words1 = sent1.split()
+        acpt1[i] = words1[6]
+
+        sent2 = f2.readline()
+        words2 = sent2.split()
+        acpt2[i] = words2[6]
+
+    fig = make_subplots(rows=2, cols=1, subplot_titles=("Accepted configurations at temperature T=1kT/J","Accepted configurations at temperature T=2.4kT/J"), shared_xaxes=True, vertical_spacing=0.1)
+
+    fig.add_trace(go.Scatter(x=N, y=acpt1, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N,y=acpt2, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
+
+    fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
+    fig.update_yaxes(title_text="Accepted configurations ", row=1, col=1)
+    fig.update_yaxes(title_text="Accepted configurations ", row=2, col=1)
+
+    fig.update_layout(font_family="lmodern",font_size=12)
+    fig.update_layout(showlegend=False)
+    #fig.write_image("testbror.pdf",width=600*1.41,height=600,scale=2)
+
+    fig.show()
 
 if __name__ == "__main__":
     #p4a_analytical()
     #p4c_comapre_nmc()
     #p4e_pde()
-    p4f_many_spin()
+    #p4f_many_spin()
+    accept()
