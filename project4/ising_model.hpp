@@ -14,7 +14,7 @@ class IsingModel{
     double initial_temp, final_temp, temp_step, last_temp; 
     double Energy, Magnetization;
     int n_spins;
-    int n_mc_cycles;
+    int n_mc_cycles,equiltime;
     int accepted_configs;
     bool energy_logger, random_conf;
     std::ofstream output_file;
@@ -27,7 +27,7 @@ class IsingModel{
     public:
     IsingModel(int number_of_spins, std::string filename, bool el, bool rc);
     ~IsingModel();
-    void Metropolis(int number_of_mc_cycles, double start_temp, double stop_temp, double step_stemp);
+    void Metropolis(int number_of_mc_cycles, int etime, double start_temp, double stop_temp, double step_stemp);
     void Metropolis(int number_of_mc_cycles, double temperature);
     void output(double temperature);
 };
