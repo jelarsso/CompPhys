@@ -32,7 +32,6 @@ void IsingModel::Init(){
                 spin_matrix(x,y) = a*2-1;
             };
         };
-    spin_matrix.print();
     }
     Magnetization = (double) arma::accu(spin_matrix);
     Energy = 0;
