@@ -188,6 +188,15 @@ def p4g():
     print(np.sqrt(2.31801817e-06))
 
 def p4d_equil():  
+    """
+    Requires data files from previous simulations.
+
+    Plots two subplots for a given temperature.
+    Subplot 1: The average energy <E> per spin as a function of Monte Carlo cycles.
+    Subplot 1: The average energy <M> per spin as a function of Monte Carlo cycles.
+    The expectation value curves are plotted from both ordered and random initial configurations.  
+    """
+    sb.run([])
     N = np.linspace(1, 1e3, int(1e3))
 
     f = open("output7.data", "r")
@@ -215,17 +224,6 @@ def p4d_equil():
     N = np.linspace(1, 1e4, int(1e4))
 
     fig = make_subplots(rows=2, cols=1, subplot_titles=("Average energy per spin","Average absolute magnetization per spin"), shared_xaxes=True, vertical_spacing=0.1)
-    """
-    fig.add_trace(go.Scatter(x=N, y=E, name='Ordered initial configuration'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N, y=E2, name='Random initial configuration'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N, y=M, name='Ordered initial configuration'),row=2,col=1)
-    fig.add_trace(go.Scatter(x=N, y=M2, name='Random initial configuration'),row=2,col=1)
-    """
-    #N = np.linspace(1, 1e4, int(1e4))
-    #fig.add_trace(go.Scatter(x=N[::50], y=E[::5], line=dict(color="Crimson"), name='Ordered initial configuration'),row=1,col=1)
-    #fig.add_trace(go.Scatter(x=N[::50], y=E2[::5], line=dict(color="MediumPurple"), name='Random initial configuration'),row=1,col=1)
-    #fig.add_trace(go.Scatter(x=N[::50],y=M[::5], line=dict(color="Crimson"),showlegend=False), row=2,col=1)
-    #fig.add_trace(go.Scatter(x=N[::50],y=M2[::5], line=dict(color="MediumPurple"),showlegend=False), row=2,col=1)
     fig.add_trace(go.Scatter(x=N[::10][1:], y=E[1:], line=dict(color="Crimson"), name='Ordered initial configuration'),row=1,col=1)
     fig.add_trace(go.Scatter(x=N[::10][1:], y=E2[1:], line=dict(color="MediumPurple"), name='Random initial configuration'),row=1,col=1)
     fig.add_trace(go.Scatter(x=N[::10][1:], y=M[1:], line=dict(color="Crimson"),showlegend=False), row=2,col=1)
@@ -234,13 +232,19 @@ def p4d_equil():
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
     fig.update_yaxes(title_text="Energy / J", row=1, col=1)
     fig.update_yaxes(title_text="Magnetization / #", row=2, col=1)
-
     fig.update_layout(font_family="lmodern",font_size=12)
-    fig.write_image("3expT24.pdf",width=600*1.41,height=600,scale=2)
 
+    fig.write_image("3expT24.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
 
 def p4d_accept():
+    """
+    Requires data files from previous simulations.
+
+    Plots two subplots.
+    Subplot 1: Rate of accepted configurations as a function of Monte Carlo cycles for temperature T = 1 J/k
+    Subplot 1: Rate of accepted configurations as a function of Monte Carlo cycles for temperature T = 2.4 J/k 
+    """
     N = np.linspace(1, 1e2, int(1e2))
 
     f1 = open("output5.data", "r")
@@ -268,11 +272,10 @@ def p4d_accept():
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
     fig.update_yaxes(title_text="Configurations / %", row=1, col=1)
     fig.update_yaxes(title_text="Configurations / %", row=2, col=1)
-
     fig.update_layout(font_family="lmodern",font_size=12)
     fig.update_layout(showlegend=False)
-    fig.write_image("acceptconfigs2.pdf",width=600*1.41,height=600,scale=2)
 
+    fig.write_image("acceptconfigs2.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
 
 if __name__ == "__main__":
