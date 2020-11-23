@@ -169,23 +169,23 @@ def p4g():
     L = 100
     Maximum value for C_V at 2.28 for suscep 2.280
     """
-    start_temp = 2.0
-    stop_temp = 2.6
-    step_temp = 0.05
 
-    
-    fig = make_subplots(rows=2, cols=2, subplot_titles=("Average Energy","Mean Magnetization", "Specific heat", "Susceptibility"))
-    
-    
-    sb.run(["./spins", filename, str(n_mc),str(L), str(start_temp),str(stop_temp),str(step_temp)])
-    ns,nmc,data = read_datafile(filename)
+    """
+    L = 40
+    Maximum value for C_V at 2.285 for suscep 2.32
+    L = 60
+    Maximum value for C_V at 2.285 for suscep 2.305
+    L = 80
+    Maximum value for C_V at 2.28 for suscep 2.295
+    L = 100
+    Maximum value for C_V at 2.275 for suscep 2.29
+    """
 
-    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,1]),row=1,col=1)
-    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,5]),row=1,col=2)
-    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,2]),row=2,col=1)
-    fig.add_trace(go.Scatter(x=data[:,0],y=data[:,4]),row=2,col=2)
+    L = np.array((40,60,80,100))
+    Tc = np.array((2.32,2.305,2.295,2.29))
 
-    fig.show()   
+    print(np.polyfit(1/L,Tc,1,full=False,cov=True))
+    print(np.sqrt(2.31801817e-06))
 
 def equil():  
     N = np.linspace(1, 1e3, int(1e3))
@@ -275,4 +275,5 @@ if __name__ == "__main__":
     #p4c_comapre_nmc()
     #p4e_pde()
     #p4f_many_spin()
-    accept()
+    #accept()
+    p4g()

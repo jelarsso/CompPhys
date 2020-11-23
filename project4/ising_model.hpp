@@ -15,7 +15,7 @@ class IsingModel{
     double Energy, Magnetization;
     int n_spins;
     int n_mc_cycles,equiltime;
-    int accepted_configs;
+    unsigned long long int accepted_configs;
     bool energy_logger, random_conf;
     std::ofstream output_file;
     std::string filename;
