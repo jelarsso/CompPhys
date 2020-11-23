@@ -55,11 +55,12 @@ void IsingModel::find_energy_differences(double temperature){
     }  
 };
 
-void IsingModel::Metropolis(int number_of_mc_cycles, double start_temp, double stop_temp, double temperature_step){
+void IsingModel::Metropolis(int number_of_mc_cycles, int etime, double start_temp, double stop_temp, double temperature_step){
     n_mc_cycles = number_of_mc_cycles;
     initial_temp = start_temp;
     final_temp = stop_temp;
     temp_step = temperature_step;
+    equiltime = etime;
     for (double temp = initial_temp; temp<=final_temp; temp+=temp_step){
         Metropolis(number_of_mc_cycles,temp);
     }
@@ -108,14 +109,16 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
 
             }
         }
-    if (energy_logger==true){
+    if (energy_logger==true && cycle>equiltime){
     output_file << Energy/n_spins/n_spins << " ";
     }
+    if (cycle>equiltime){
     expectation_values[0] += Energy;
     expectation_values[1] += Energy*Energy;
     expectation_values[2] += Magnetization;
     expectation_values[3] += Magnetization*Magnetization;
     expectation_values[4] += std::fabs(Magnetization);
+    }
     }
     if (energy_logger==true){
        output_file << "\n";
@@ -126,7 +129,7 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
 
 
 void IsingModel::output(double temperature){
-    double norm = 1/(double) n_mc_cycles;
+    double norm = 1/(double) (n_mc_cycles - equiltime);
     double Eaverage = expectation_values[0]*norm;
     double E2average = expectation_values[1]*norm;
     double Maverage = expectation_values[2]*norm;
@@ -137,7 +140,7 @@ void IsingModel::output(double temperature){
     
     if (output_file.is_open() == false){
         output_file.open(filename);
-        output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << " all values per spin\n";
+        output_file << "#n_spins " << n_spins << " n_mc_cycles " << n_mc_cycles << " equiltime " << equiltime << " all values per spin\n";
         output_file << "# temp Eavg  Evar  Mavg  Mvar  Mabsavg accepted_configs\n"; 
     }
     
