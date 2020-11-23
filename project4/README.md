@@ -28,8 +28,10 @@ Ran on AMD Ryzen 5 3500U with 8 threads 3.7 GHz
 
 Without paralellization
 > (base) johan@johanemil:~/Documents/UiO/CompPhys/project4$ time ./para "output.data" 100000 1000 20 2.0 2.6 0.05
+
 > real	0m25,206s
 
 With parallelization
 > (base) johan@johanemil:~/Documents/UiO/CompPhys/project4$ time ./para "output.data" 100000 1000 20 2.0 2.6 0.05
+
 > real	0m5,048s
