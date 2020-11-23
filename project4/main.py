@@ -190,7 +190,7 @@ def p4g():
 def p4d_equil():  
     N = np.linspace(1, 1e3, int(1e3))
 
-    f = open("output3.data", "r")
+    f = open("output7.data", "r")
     f.readline(); f.readline()
 
     E = np.zeros_like(N)
@@ -201,9 +201,7 @@ def p4d_equil():
         E[i] = words[1]
         M[i] = words[5]
 
-    # prøver noe
-
-    f = open("output4.data", "r")
+    f = open("output8.data", "r")
     f.readline(); f.readline()
 
     E2 = np.zeros_like(N)
@@ -214,6 +212,8 @@ def p4d_equil():
         E2[i] = words[1]
         M2[i] = words[5]
 
+    N = np.linspace(1, 1e4, int(1e4))
+
     fig = make_subplots(rows=2, cols=1, subplot_titles=("Average energy per spin","Average absolute magnetization per spin"), shared_xaxes=True, vertical_spacing=0.1)
     """
     fig.add_trace(go.Scatter(x=N, y=E, name='Ordered initial configuration'),row=1,col=1)
@@ -221,34 +221,36 @@ def p4d_equil():
     fig.add_trace(go.Scatter(x=N, y=M, name='Ordered initial configuration'),row=2,col=1)
     fig.add_trace(go.Scatter(x=N, y=M2, name='Random initial configuration'),row=2,col=1)
     """
-    N = np.linspace(1, 1e4, int(1e4))
-    fig.add_trace(go.Scatter(x=N[::50], y=E[::5], name='Ordered initial configuration'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N[::50], y=E2[::5], name='Random initial configuration'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N[::50],y=M[::5], name='Ordered initial configuration'),row=2,col=1)
-    fig.add_trace(go.Scatter(x=N[::50],y=M2[::5], name='Random initial configuration'),row=2,col=1)
-    
-    # check it
+    #N = np.linspace(1, 1e4, int(1e4))
+    #fig.add_trace(go.Scatter(x=N[::50], y=E[::5], line=dict(color="Crimson"), name='Ordered initial configuration'),row=1,col=1)
+    #fig.add_trace(go.Scatter(x=N[::50], y=E2[::5], line=dict(color="MediumPurple"), name='Random initial configuration'),row=1,col=1)
+    #fig.add_trace(go.Scatter(x=N[::50],y=M[::5], line=dict(color="Crimson"),showlegend=False), row=2,col=1)
+    #fig.add_trace(go.Scatter(x=N[::50],y=M2[::5], line=dict(color="MediumPurple"),showlegend=False), row=2,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=E[1:], line=dict(color="Crimson"), name='Ordered initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=E2[1:], line=dict(color="MediumPurple"), name='Random initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=M[1:], line=dict(color="Crimson"),showlegend=False), row=2,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=M2[1:], line=dict(color="MediumPurple"),showlegend=False), row=2,col=1)
 
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
     fig.update_yaxes(title_text="Energy / J", row=1, col=1)
     fig.update_yaxes(title_text="Magnetization / #", row=2, col=1)
 
     fig.update_layout(font_family="lmodern",font_size=12)
-    fig.write_image("expT10.pdf",width=600*1.41,height=600,scale=2)
+    fig.write_image("3expT24.pdf",width=600*1.41,height=600,scale=2)
 
     fig.show()
 
 def p4d_accept():
-    N = np.linspace(1, 1e3, int(1e3))
+    N = np.linspace(1, 1e2, int(1e2))
 
-    f1 = open("output3.data", "r")
+    f1 = open("output5.data", "r")
     f1.readline(); f1.readline()
-    f2 = open("output4.data", "r")
+    f2 = open("output6.data", "r")
     f2.readline(); f2.readline()
 
     acpt1 = np.zeros_like(N)
     acpt2 = np.zeros_like(N) 
-    for i in range(int(1e3)):
+    for i in range(int(1e2)):
         sent1 = f1.readline()
         words1 = sent1.split()
         acpt1[i] = words1[6]
@@ -257,19 +259,19 @@ def p4d_accept():
         words2 = sent2.split()
         acpt2[i] = words2[6]
 
-    fig = make_subplots(rows=2, cols=1, subplot_titles=("Accepted configurations at temperature T=1kT/J","Accepted configurations at temperature T=2.4kT/J"), shared_xaxes=True, vertical_spacing=0.1)
+    fig = make_subplots(rows=2, cols=1, subplot_titles=("Accepted configurations at temperature T=1J/k","Accepted configurations at temperature T=2.4J/k"), shared_xaxes=True, vertical_spacing=0.1)
 
-    N = np.linspace(1, 1e4, int(1e4))
-    fig.add_trace(go.Scatter(x=N[::10], y=acpt1, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N[::10],y=acpt2, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
+    N = np.linspace(1, 1e5, int(1e5))
+    fig.add_trace(go.Scatter(x=N[::1000][10:], y=100*acpt1[10:]/N[::1000][10:]/400, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::1000][10:],y=100*acpt2[10:]/N[10::1000][10:]/400, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
 
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
-    fig.update_yaxes(title_text="Configurations", row=1, col=1)
-    fig.update_yaxes(title_text="Configurations", row=2, col=1)
+    fig.update_yaxes(title_text="Configurations / %", row=1, col=1)
+    fig.update_yaxes(title_text="Configurations / %", row=2, col=1)
 
     fig.update_layout(font_family="lmodern",font_size=12)
     fig.update_layout(showlegend=False)
-    #fig.write_image("acceptconfigs.pdf",width=600*1.41,height=600,scale=2)
+    fig.write_image("acceptconfigs2.pdf",width=600*1.41,height=600,scale=2)
 
     fig.show()
 
