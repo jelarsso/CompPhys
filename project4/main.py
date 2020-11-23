@@ -5,6 +5,7 @@ import subprocess as sb
 from IPython import embed
 
 def read_datafile(filename):
+    # function for reading files
     with open(filename,"r") as infile:
         l = infile.readline().split(" ")
         n_spins = int(l[1]) 
@@ -14,6 +15,10 @@ def read_datafile(filename):
 
 
 def p4a_analytical():
+    """
+    Plots average energy, mean magnetization, specific heat and 
+    susceptibility as functions of temperature.
+    """
     filename = "p4a.data"
     nspins = 2
     n_mc = 100000
@@ -54,6 +59,10 @@ def p4a_analytical():
     fig.show()
 
 def p4c_comapre_nmc():
+    """
+    Plots average energy, mean magnetization, specific heat and 
+    susceptibility as functions of Monte Carlo cycles.
+    """
     filename = "p4c.data"
     n_mc = np.logspace(1,7,50)
     temp = 1
@@ -96,6 +105,9 @@ def p4c_comapre_nmc():
     fig.show()
 
 def p4e_pde():
+    """
+    Plots the probability distribution for the temperatures T = 1 J/k  and T = 2.4 J/k   
+    """
     nmc = 100_000
     equiltime = 10_000
     a=sb.run(["./pde", "pde.data", str(nmc), str(equiltime), "1", "2.4", "1.4"],capture_output=True)
@@ -119,6 +131,10 @@ def p4e_pde():
     fig.show()
 
 def p4f_many_spin():
+    """
+    Plots average energy, mean magnetization, specific heat and 
+    susceptibility as functions of Monte Carlo cycles.
+    """
     n_mc = 10_000_000
     equiltime = 100_000
     Ls = [40,60,80,100]
@@ -149,6 +165,9 @@ def p4f_many_spin():
         print(f"Maximum value for C_V at {data[sort,0][np.argmax(data[sort,2])]} for suscep {data[sort,0][np.argmax(data[sort,4])]}")
 
 def p4g():
+    """
+    Find TC when L goes to infinity
+    """
     T_cs = []
     Ls = []
 
@@ -187,10 +206,19 @@ def p4g():
     print(np.polyfit(1/L,Tc,1,full=False,cov=True))
     print(np.sqrt(2.31801817e-06))
 
-def equil():  
+def p4d_equil():  
+    """
+    Requires data files from previous simulations.
+
+    Plots two subplots for a given temperature.
+    Subplot 1: The average energy <E> per spin as a function of Monte Carlo cycles.
+    Subplot 1: The average energy <M> per spin as a function of Monte Carlo cycles.
+    The expectation value curves are plotted from both ordered and random initial configurations.  
+    """
+    sb.run([])
     N = np.linspace(1, 1e3, int(1e3))
 
-    f = open("output1.data", "r")
+    f = open("output7.data", "r")
     f.readline(); f.readline()
 
     E = np.zeros_like(N)
@@ -200,53 +228,54 @@ def equil():
         words = sent.split()
         E[i] = words[1]
         M[i] = words[5]
+
+    f = open("output8.data", "r")
+    f.readline(); f.readline()
+
+    E2 = np.zeros_like(N)
+    M2 = np.zeros_like(N)
+    for i in range(int(1e3)):
+        sent = f.readline()
+        words = sent.split()
+        E2[i] = words[1]
+        M2[i] = words[5]
+
+    N = np.linspace(1, 1e4, int(1e4))
 
     fig = make_subplots(rows=2, cols=1, subplot_titles=("Average energy per spin","Average absolute magnetization per spin"), shared_xaxes=True, vertical_spacing=0.1)
-
-    fig.add_trace(go.Scatter(x=N, y=E, name='Average energy per spin'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N,y=M, name='Average absolute magnetization per spin'),row=2,col=1)
-
-    # prøver noe
-
-    f = open("output2.data", "r")
-    f.readline(); f.readline()
-
-    E = np.zeros_like(N)
-    M = np.zeros_like(N)
-    for i in range(int(1e3)):
-        sent = f.readline()
-        words = sent.split()
-        E[i] = words[1]
-        M[i] = words[5]
-
-    fig.add_trace(go.Scatter(x=N, y=E, name='Average energy per spin'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N,y=M, name='Average absolute magnetization per spin'),row=2,col=1)
-
-    # check it
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=E[1:], line=dict(color="Crimson"), name='Ordered initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=E2[1:], line=dict(color="MediumPurple"), name='Random initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=M[1:], line=dict(color="Crimson"),showlegend=False), row=2,col=1)
+    fig.add_trace(go.Scatter(x=N[::10][1:], y=M2[1:], line=dict(color="MediumPurple"),showlegend=False), row=2,col=1)
 
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
     fig.update_yaxes(title_text="Energy / J", row=1, col=1)
     fig.update_yaxes(title_text="Magnetization / #", row=2, col=1)
-
     fig.update_layout(font_family="lmodern",font_size=12)
-    fig.update_layout(showlegend=False)
-    fig.write_image("testbror.pdf",width=600*1.41,height=600,scale=2)
 
+    fig.write_image("3expT24.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
 
-    #fig.write_image("fig1.pdf")
+def p4d_accept():
+    """
+    Requires data files from previous simulations:
+    >>> make op
+    >>> ./testing
 
-def accept():
-    N = np.linspace(1, 1e3, int(1e3))
-    sb.run(["./"])
-    f1 = open("output1.data", "r")
+    Plots two subplots.
+    Subplot 1: Rate of accepted configurations as a function of Monte Carlo cycles for temperature T = 1 J/k
+    Subplot 1: Rate of accepted configurations as a function of Monte Carlo cycles for temperature T = 2.4 J/k 
+    """
+    N = np.linspace(1, 1e2, int(1e2))
+
+    f1 = open("output5.data", "r")
     f1.readline(); f1.readline()
-    f2 = open("output2.data", "r")
+    f2 = open("output6.data", "r")
     f2.readline(); f2.readline()
 
     acpt1 = np.zeros_like(N)
     acpt2 = np.zeros_like(N) 
-    for i in range(int(1e3)):
+    for i in range(int(1e2)):
         sent1 = f1.readline()
         words1 = sent1.split()
         acpt1[i] = words1[6]
@@ -255,25 +284,31 @@ def accept():
         words2 = sent2.split()
         acpt2[i] = words2[6]
 
-    fig = make_subplots(rows=2, cols=1, subplot_titles=("Accepted configurations at temperature T=1kT/J","Accepted configurations at temperature T=2.4kT/J"), shared_xaxes=True, vertical_spacing=0.1)
+    fig = make_subplots(rows=2, cols=1, subplot_titles=("Accepted configurations at temperature T=1J/k","Accepted configurations at temperature T=2.4J/k"), shared_xaxes=True, vertical_spacing=0.1)
 
-    fig.add_trace(go.Scatter(x=N, y=acpt1, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N,y=acpt2, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
+    N = np.linspace(1, 1e5, int(1e5))
+    fig.add_trace(go.Scatter(x=N[::1000][10:], y=100*acpt1[10:]/N[::1000][10:]/400, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::1000][10:],y=100*acpt2[10:]/N[10::1000][10:]/400, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
 
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
-    fig.update_yaxes(title_text="Accepted configurations ", row=1, col=1)
-    fig.update_yaxes(title_text="Accepted configurations ", row=2, col=1)
-
+    fig.update_yaxes(title_text="Configurations / %", row=1, col=1)
+    fig.update_yaxes(title_text="Configurations / %", row=2, col=1)
     fig.update_layout(font_family="lmodern",font_size=12)
     fig.update_layout(showlegend=False)
-    #fig.write_image("testbror.pdf",width=600*1.41,height=600,scale=2)
 
+    
+    fig.write_image("acceptconfigs2.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
 
 if __name__ == "__main__":
-    #p4a_analytical()
+    #Select one or more!
+    p4a_analytical()
     #p4c_comapre_nmc()
     #p4e_pde()
-    p4f_many_spin()
+    #p4f_many_spin()
     #accept()
     #p4g()
+    #p4d_equil()
+    #p4d_accept()
+    #p4e_pde()
+    #p4f_many_spin()

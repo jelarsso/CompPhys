@@ -19,6 +19,11 @@ void IsingModelMetropolis(std::string, int, int, int, double, double, double);
 
 //Implementations
 
+/*
+The functions in this file is copied from ising_model.cpp but the class structure has been removed.
+The int main() function shows the usage of the function, however it is simply needed to compile with "make parallel"
+*/
+
 void Init(arma::Mat<int>* spin_matrix, double* Energy, double* Magnetization, int* accepted_configs, int n_spins){
     spin_matrix->ones(n_spins,n_spins);
     *Magnetization = (double) arma::accu(*spin_matrix);
