@@ -132,10 +132,10 @@ def p4f_many_spin():
 
     fig.show()   
 
-def equil():  
+def p4d_equil():  
     N = np.linspace(1, 1e3, int(1e3))
 
-    f = open("output1.data", "r")
+    f = open("output3.data", "r")
     f.readline(); f.readline()
 
     E = np.zeros_like(N)
@@ -145,28 +145,33 @@ def equil():
         words = sent.split()
         E[i] = words[1]
         M[i] = words[5]
-
-    fig = make_subplots(rows=2, cols=1, subplot_titles=("Average energy per spin","Average absolute magnetization per spin"), shared_xaxes=True, vertical_spacing=0.1)
-
-    fig.add_trace(go.Scatter(x=N, y=E, name='Average energy per spin'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N,y=M, name='Average absolute magnetization per spin'),row=2,col=1)
 
     # prøver noe
 
-    f = open("output2.data", "r")
+    f = open("output4.data", "r")
     f.readline(); f.readline()
 
-    E = np.zeros_like(N)
-    M = np.zeros_like(N)
+    E2 = np.zeros_like(N)
+    M2 = np.zeros_like(N)
     for i in range(int(1e3)):
         sent = f.readline()
         words = sent.split()
-        E[i] = words[1]
-        M[i] = words[5]
+        E2[i] = words[1]
+        M2[i] = words[5]
 
-    fig.add_trace(go.Scatter(x=N, y=E, name='Average energy per spin'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N,y=M, name='Average absolute magnetization per spin'),row=2,col=1)
-
+    fig = make_subplots(rows=2, cols=1, subplot_titles=("Average energy per spin","Average absolute magnetization per spin"), shared_xaxes=True, vertical_spacing=0.1)
+    """
+    fig.add_trace(go.Scatter(x=N, y=E, name='Ordered initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N, y=E2, name='Random initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N, y=M, name='Ordered initial configuration'),row=2,col=1)
+    fig.add_trace(go.Scatter(x=N, y=M2, name='Random initial configuration'),row=2,col=1)
+    """
+    N = np.linspace(1, 1e4, int(1e4))
+    fig.add_trace(go.Scatter(x=N[::50], y=E[::5], name='Ordered initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::50], y=E2[::5], name='Random initial configuration'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::50],y=M[::5], name='Ordered initial configuration'),row=2,col=1)
+    fig.add_trace(go.Scatter(x=N[::50],y=M2[::5], name='Random initial configuration'),row=2,col=1)
+    
     # check it
 
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
@@ -174,19 +179,16 @@ def equil():
     fig.update_yaxes(title_text="Magnetization / #", row=2, col=1)
 
     fig.update_layout(font_family="lmodern",font_size=12)
-    fig.update_layout(showlegend=False)
-    fig.write_image("testbror.pdf",width=600*1.41,height=600,scale=2)
+    fig.write_image("expT10.pdf",width=600*1.41,height=600,scale=2)
 
     fig.show()
 
-    #fig.write_image("fig1.pdf")
-
-def accept():
+def p4d_accept():
     N = np.linspace(1, 1e3, int(1e3))
 
-    f1 = open("output1.data", "r")
+    f1 = open("output3.data", "r")
     f1.readline(); f1.readline()
-    f2 = open("output2.data", "r")
+    f2 = open("output4.data", "r")
     f2.readline(); f2.readline()
 
     acpt1 = np.zeros_like(N)
@@ -202,22 +204,24 @@ def accept():
 
     fig = make_subplots(rows=2, cols=1, subplot_titles=("Accepted configurations at temperature T=1kT/J","Accepted configurations at temperature T=2.4kT/J"), shared_xaxes=True, vertical_spacing=0.1)
 
-    fig.add_trace(go.Scatter(x=N, y=acpt1, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
-    fig.add_trace(go.Scatter(x=N,y=acpt2, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
+    N = np.linspace(1, 1e4, int(1e4))
+    fig.add_trace(go.Scatter(x=N[::10], y=acpt1, name='Accepted configurations at temperatur T=1kT/J'),row=1,col=1)
+    fig.add_trace(go.Scatter(x=N[::10],y=acpt2, name='Accepted configurations at temperatur T=2.4kT/J'),row=2,col=1)
 
     fig.update_xaxes(title_text="Monte Carlo cycles", row=2, col=1)
-    fig.update_yaxes(title_text="Accepted configurations ", row=1, col=1)
-    fig.update_yaxes(title_text="Accepted configurations ", row=2, col=1)
+    fig.update_yaxes(title_text="Configurations", row=1, col=1)
+    fig.update_yaxes(title_text="Configurations", row=2, col=1)
 
     fig.update_layout(font_family="lmodern",font_size=12)
     fig.update_layout(showlegend=False)
-    #fig.write_image("testbror.pdf",width=600*1.41,height=600,scale=2)
+    #fig.write_image("acceptconfigs.pdf",width=600*1.41,height=600,scale=2)
 
     fig.show()
 
 if __name__ == "__main__":
     #p4a_analytical()
     #p4c_comapre_nmc()
+    #p4d_equil()
+    p4d_accept()
     #p4e_pde()
     #p4f_many_spin()
-    accept()
