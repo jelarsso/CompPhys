@@ -5,6 +5,7 @@ import subprocess as sb
 from IPython import embed
 
 def read_datafile(filename):
+    # function for reading files
     with open(filename,"r") as infile:
         l = infile.readline().split(" ")
         n_spins = int(l[1]) 
@@ -14,6 +15,10 @@ def read_datafile(filename):
 
 
 def p4a_analytical():
+    """
+    Plots average energy, mean magnetization, specific heat and 
+    susceptibility as functions of temperature.
+    """
     filename = "p4a.data"
     nspins = 2
     n_mc = 100000
@@ -54,6 +59,10 @@ def p4a_analytical():
     fig.show()
 
 def p4c_comapre_nmc():
+    """
+    Plots average energy, mean magnetization, specific heat and 
+    susceptibility as functions of Monte Carlo cycles.
+    """
     filename = "p4c.data"
     n_mc = np.logspace(1,7,50)
     temp = 1
@@ -96,6 +105,9 @@ def p4c_comapre_nmc():
     fig.show()
 
 def p4e_pde():
+    """
+    Plots the probability distribution for the temperatures T = 1 J/k  and T = 2.4 J/k   
+    """
     nmc = 100_000
     equiltime = 10_000
     a=sb.run(["./pde", "pde.data", str(nmc), str(equiltime), "1", "2.4", "1.4"],capture_output=True)
@@ -119,6 +131,10 @@ def p4e_pde():
     fig.show()
 
 def p4f_many_spin():
+    """
+    Plots average energy, mean magnetization, specific heat and 
+    susceptibility as functions of Monte Carlo cycles.
+    """
     n_mc = 10_000_000
     equiltime = 100_000
     Ls = [40,60,80,100]
@@ -149,6 +165,9 @@ def p4f_many_spin():
         print(f"Maximum value for C_V at {data[sort,0][np.argmax(data[sort,2])]} for suscep {data[sort,0][np.argmax(data[sort,4])]}")
 
 def p4g():
+    """
+    Find TC when L goes to infinity
+    """
     T_cs = []
     Ls = []
 
