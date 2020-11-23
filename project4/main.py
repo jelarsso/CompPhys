@@ -35,7 +35,7 @@ def p4a_analytical():
     fig.add_trace(go.Scatter(x=1/beta,y=beta*beta*(mean_E2-mean_E**2)/nspins/nspins,showlegend=False,line=dict(color="Crimson")),row=2,col=1)
     fig.add_trace(go.Scatter(x=1/beta,y=beta*(mean_M2-mean_M**2)/nspins/nspins,showlegend=False,line=dict(color="Crimson")),row=2,col=2)
 
-    #sb.run(["./spins2", filename, str(n_mc), str(start_temp),str(stop_temp),str(step_temp)])
+    sb.run(["./spins2", filename, str(n_mc), str(start_temp),str(stop_temp),str(step_temp)])
     ns,nmc,data = read_datafile(filename)
 
     fig.add_trace(go.Scatter(name="Simulated",x=data[:,0],y=data[:,1],mode="markers",marker=dict(color="MediumPurple")),row=1,col=1)
@@ -46,8 +46,8 @@ def p4a_analytical():
     fig.update_xaxes(title="Temperature / J/k")
     fig.update_yaxes(title="Energy / J",row=1,col=1)
     fig.update_yaxes(title="Magnetization / #",row=1,col=2)
-    fig.update_yaxes(title="Specific Heat / J",row=2,col=1)
-    fig.update_yaxes(title="Susceptibility / ",row=2,col=2)
+    fig.update_yaxes(title="Specific Heat / k",row=2,col=1)
+    fig.update_yaxes(title="Susceptibility / 1/J",row=2,col=2)
     fig.update_yaxes(title_standoff=1)
     fig.update_layout(title_text="2*2 grid. All values per spin.",font_family="lmodern",font_size=12)
     fig.write_image("exval4c.pdf",width=600*1.41,height=600,scale=2)
@@ -88,8 +88,8 @@ def p4c_comapre_nmc():
     fig.update_xaxes(title="log(Number of Monte Carlo cycles)")
     fig.update_yaxes(title="Energy / J",row=1,col=1)
     fig.update_yaxes(title="Magnetization / #",row=1,col=2)
-    fig.update_yaxes(title="Specific Heat / J",row=2,col=1)
-    fig.update_yaxes(title="Susceptibility / ",row=2,col=2)
+    fig.update_yaxes(title="Specific Heat / k",row=2,col=1)
+    fig.update_yaxes(title="Susceptibility / 1/J",row=2,col=2)
     fig.update_yaxes(title_standoff=1)
     fig.update_layout(font_family="lmodern",title_text="2*2 grid, T=1 J/k, All Values per Spin.",font_size=12)
     fig.write_image("nmc4c.pdf",width=600*1.41,height=600,scale=2)
@@ -124,12 +124,12 @@ def p4f_many_spin():
     Ls = [40,60,80,100]
     start_temp = [2.25,2.25,2.25,2.25]
     stop_temp = [2.35,2.35,2.35,2.35]
-    step_temp = 0.005
+    step_temp = 0.05
 
     for i,k in enumerate(Ls):    
-        filename = f"p4f_l{Ls[i]}_dT{step_temp}_narrower10mill.data"
+        filename = f"p4f_l{Ls[i]}_dT{step_temp}.data"
         fig = make_subplots(rows=2, cols=2, subplot_titles=("Average Energy","Mean Magnetization", "Specific heat", "Susceptibility"))
-        sb.run(["./para", filename, str(n_mc),str(equiltime), str(Ls[i]), str(start_temp[i]),str(stop_temp[i]),str(step_temp)])
+        #sb.run(["./para", filename, str(n_mc),str(equiltime), str(Ls[i]), str(start_temp[i]),str(stop_temp[i]),str(step_temp)])
         ns,nmc,data = read_datafile(filename)
         sort = np.argsort(data[:,0]) # due to parallelization
         fig.add_trace(go.Scatter(showlegend=False,mode="markers",x=data[sort,0],y=data[sort,1]),row=1,col=1)
@@ -139,8 +139,8 @@ def p4f_many_spin():
         fig.update_xaxes(title="Temperature / J/k")
         fig.update_yaxes(title="Energy / J",row=1,col=1)
         fig.update_yaxes(title="Magnetization / #",row=1,col=2)
-        fig.update_yaxes(title="Specific Heat / J",row=2,col=1)
-        fig.update_yaxes(title="Susceptibility / ",row=2,col=2)
+        fig.update_yaxes(title="Specific Heat / k",row=2,col=1)
+        fig.update_yaxes(title="Susceptibility / 1/J",row=2,col=2)
         fig.update_yaxes(title_standoff=1)
         fig.update_layout(title_text=f"{Ls[i]}*{Ls[i]}"+" grid. All values per spin.",font_family="lmodern",font_size=12)
         fig.write_image(f"p4f_l{Ls[i]}_dT{step_temp}_narrower10mill.pdf",width=600*1.41,height=600,scale=2)
@@ -238,7 +238,7 @@ def equil():
 
 def accept():
     N = np.linspace(1, 1e3, int(1e3))
-
+    sb.run(["./"])
     f1 = open("output1.data", "r")
     f1.readline(); f1.readline()
     f2 = open("output2.data", "r")
@@ -271,9 +271,9 @@ def accept():
     fig.show()
 
 if __name__ == "__main__":
-    p4a_analytical()
-    p4c_comapre_nmc()
-    p4e_pde()
-    #p4f_many_spin()
+    #p4a_analytical()
+    #p4c_comapre_nmc()
+    #p4e_pde()
+    p4f_many_spin()
     #accept()
     #p4g()

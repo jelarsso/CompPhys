@@ -19,3 +19,6 @@ op:
 
 parallel:
 	c++ ising_parallel.cpp -o para -fopenmp -O3  -I /home/Documents/armadillo-9.900.3/include -DARMA_DONT_USE_WRAPPER -lblas -llapack
+
+project:
+	2spin nspin pde op parallel
