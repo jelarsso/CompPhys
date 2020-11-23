@@ -7,10 +7,28 @@
 #include <fstream>
 
 inline int IsingModel::period(int index, int size){
+    /*
+    In:
+    int index, index to index the array 
+    int size, size of the array
+    
+    Finds the correct index to an array with periodic boundary conditions.
+    
+    Out:
+    int the new index
+    */
     return (index+size)%size;
 };
 
 IsingModel::IsingModel(int number_of_spins, std::string filen, bool el, bool rc){
+    /*
+    In:
+    int number_of_spins, the grid size or number of spins L*L'
+    string filename, the filename
+    bool el, rc, whether to turn on or off the energy logging or random start configurations
+    
+    Constructor.
+    */
     n_spins = number_of_spins;
     filename = filen;
     energy_logger = el;
@@ -18,6 +36,9 @@ IsingModel::IsingModel(int number_of_spins, std::string filen, bool el, bool rc)
 };
 
 void IsingModel::Init(){
+    /*
+    Initialize the array of the spins according to the parameters set by the constructor.
+    */
     if (!random_conf){
     spin_matrix.ones(n_spins,n_spins);
     }else{
@@ -45,10 +66,17 @@ void IsingModel::Init(){
 
 
 IsingModel::~IsingModel(){
+    /*
+    Destructor for the class. 
+    */
     output_file.close();
 };
 
 void IsingModel::find_energy_differences(double temperature){
+    /*
+    double temperature: the temperature to calculate the differences at.
+    Finds the energy differences for the possible spin transistions at temperature.
+    */
     energy_differences.zeros(17);
     for (int deltaE = -8; deltaE<=8; deltaE+=4){
         energy_differences(deltaE+8) = std::exp(-deltaE/temperature);
@@ -56,6 +84,16 @@ void IsingModel::find_energy_differences(double temperature){
 };
 
 void IsingModel::Metropolis(int number_of_mc_cycles, int etime, double start_temp, double stop_temp, double temperature_step){
+    /*
+    int number_of_mc_cycles: The number of monte carlo cycles to perform.
+    int etime: The equilibration time. The number of MC cycles to perform before starting to calculate the expectation values.
+    double start_temp: The temperature to start the simulations at.
+    double stop_temp: The temperature to end the simulations at.
+    double temperature_step: The step between the temperatures between start and stop.
+    
+    Simulate the Ising model with the specified parameters. Will perform several simulations between start_temp and stop_temp.
+    Outputs to filename
+    */
     n_mc_cycles = number_of_mc_cycles;
     initial_temp = start_temp;
     final_temp = stop_temp;
@@ -68,6 +106,12 @@ void IsingModel::Metropolis(int number_of_mc_cycles, int etime, double start_tem
 
 
 void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
+    /*
+    int number_of_mc_cycles: the number of MC cycles
+    double temp: the temperature to simulate at.
+    
+    Perform the Metropolis algorithm for one temperature. 
+    */
     n_mc_cycles = number_of_mc_cycles;
     last_temp = temp;
 
@@ -129,6 +173,11 @@ void IsingModel::Metropolis(int number_of_mc_cycles, double temp){
 
 
 void IsingModel::output(double temperature){
+    /*
+    double temperature: the temperature that the last simulation was performed at, to get correct normalization.
+    
+    Function to output the expectation values to filename.
+    */
     double norm = 1/(double) (n_mc_cycles - equiltime);
     double Eaverage = expectation_values[0]*norm;
     double E2average = expectation_values[1]*norm;
