@@ -38,51 +38,51 @@ void lusolve(double a, double b, double c, int n, arma::Col<double>* rhs, arma::
     }
 
     u(0) = (*rhs)(0);
-    for (int i = 1; i<n; i++){
+    for (int i = 1; i<n+1; i++){
         u(i) = (*rhs)(i) - u(i-1)*l(i-1);
     }
-
     
-    u(n) = u(n)/d(n);
-    (*sol)(n-1)  = u(n);
-    for (int i = n-2; i>=1; i--){
+    (*sol)(n) = (*rhs)(n);
+    for (int i = n-1; i>=0; i--){
         (*sol)(i) = (u(i) - (*sol)(i+1)*c)/d(i);
     }
 };
 
-void forward_euler(int n, double dx, double alpha, int number_of_steps_t, arma::Col<double> *usolve,std::string filename){
+void forward_euler(int n, double dx, double alpha, double boundaryleft, double boundaryright, int number_of_steps_t, arma::Col<double> *usolve,std::string filename){
     arma::Col<double> u(n+1);
     for (int i=1; i<n; i++){
         u(i) = init_func(dx*i);
     }
-    u(0) = 0;
-    u(n) = 0;
+    u(0) = boundaryleft;
+    u(n) = boundaryright;
     
     for (int t=0; t<number_of_steps_t;t++){
         for (int i=1; i<n; i++){
             (*usolve)(i) = alpha*u(i-1) + (1-2*alpha)*u(i) + alpha*u(i+1);
         }
+        (*usolve)(0) = boundaryleft;
+        (*usolve)(n) = boundaryright;
         for (int j = 0; j<n+1;j++) u(j) = (*usolve)(j);
     output(n,usolve,filename);
     }
     output_file.close();
 };
 
-void backward_euler(int n, double dx,double alpha, int number_of_steps_t, arma::Col<double> *usolve,std::string filename){
+void backward_euler(int n, double dx, double alpha, double boundaryleft, double boundaryright, int number_of_steps_t, arma::Col<double> *usolve,std::string filename){
     arma::Col<double> uprev(n+1);
-    (*usolve)(0) = 0;
-    uprev(0) = 0;
-    (*usolve)(n) = 0;
-    uprev(n) = 0;
+    (*usolve)(0) = boundaryleft;
+    uprev(0) = boundaryleft;
+    (*usolve)(n) = boundaryright;
+    uprev(n) = boundaryright;
     for (int i=1; i<n; i++){
         (*usolve)(i) = init_func(dx*i);
         uprev(i) = init_func(dx*i);
     }
     
     for (int t = 0; t < number_of_steps_t; t++){
-        lusolve(-alpha,1+2*alpha,-alpha, n+1, &uprev, usolve);
-        (*usolve)(0) = 0;
-        (*usolve)(n) = 0;
+        lusolve(-alpha,1+2*alpha,-alpha, n, &uprev, usolve);
+        (*usolve)(0) = boundaryleft;
+        (*usolve)(n) = boundaryright;
         for (int j = 0; j<n+1;j++) uprev(j) = (*usolve)(j);
     output(n,usolve,filename);
     }
@@ -90,10 +90,10 @@ void backward_euler(int n, double dx,double alpha, int number_of_steps_t, arma::
 };
 
 
-void cranky_nicholson(int n, double dx, double alpha, int number_of_steps_t,arma::Col<double> *usolve, std::string filename){
+void cranky_nicholson(int n, double dx, double alpha, double boundaryleft, double boundaryright, int number_of_steps_t,arma::Col<double> *usolve, std::string filename){
     arma::Col<double> rhs(n+1);
-    (*usolve)(0) = 0;
-    (*usolve)(n) = 0;
+    (*usolve)(0) = boundaryleft;
+    (*usolve)(n) = boundaryright;
 
     for (int i=1; i<n; i++){
         (*usolve)(i) = init_func(dx*i);
@@ -101,11 +101,11 @@ void cranky_nicholson(int n, double dx, double alpha, int number_of_steps_t,arma
 
     for (int t = 0; t<number_of_steps_t; t++){
         for (int i = 1; i<n;i++) rhs(i) = alpha*(*usolve)(i-1) + (2-2*alpha)*(*usolve)(i)  + alpha*(*usolve)(i+1);
-        rhs(0) = 0;
-        rhs(n) = 0;
+        rhs(0) = boundaryleft;
+        rhs(n) = boundaryright;
         lusolve(-alpha,2+2*alpha,-alpha,n,&rhs,usolve);
-        (*usolve)(0)=0;
-        (*usolve)(n)=0;
+        (*usolve)(0)=boundaryleft;
+        (*usolve)(n)=boundaryright;
         output(n,usolve,filename);
     }
     
