@@ -45,9 +45,37 @@ def compare_p5c():
     fig.add_trace(go.Scatter(x=x,y=data_cn[-1,:],mode="lines",name="Cranky"))
     fig.show()
 
+def p5d():
+    sb.run(["./test"]) #,str(0.01),str(10000)])
+    data_f = read_file("fe2.data")
+    data_b = read_file("be2.data")
+    data_cn = read_file("cn2.data")
+    x = np.linspace(0,1,data_f.shape[1])
+    
+    y_analytic_long = np.linspace(0, 1, data_f.shape[1])
+    k = 1/np.e
+    y_analytic_short = np.zeros_like(x)
+    n = 1000
+    t = 1e-12
+    for i in range(1, n+1):
+        yi = 4*np.cos((2*n-1)*np.pi*x/2) *np.exp(-(2*n-1)**2*np.pi**2*t)
+        y_analytic_short = y_analytic_short + yi
+        
+    y_analytic_short = y_analytic_short/10
+    y_analytic_short[:-1] = 1/y_analytic_short[:-1]
+    y_analytic_short[-1] = 1 
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x,y=data_f[-1,:],mode="lines",name="Forward"))
+    fig.add_trace(go.Scatter(x=x,y=data_b[-1,:],mode="lines",name="Backward"))
+    fig.add_trace(go.Scatter(x=x,y=data_cn[-1,:],mode="lines",name="Cranky"))
+    #fig.add_trace(go.Scatter(x=x,y=y_analytic_long,mode="lines",name="Analytic"))
+    fig.add_trace(go.Scatter(x=x,y=y_analytic_short,mode="lines",name="Analytic short"))
+    fig.show()
 
 
 
 if __name__=="__main__":
     #animate("dump.data")
-    compare_p5c()
+    #compare_p5c()
+    p5d()
