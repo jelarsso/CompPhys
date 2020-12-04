@@ -16,5 +16,6 @@ void output(int, arma::Col<double>*, std::string);
 void output(int, arma::Mat<double>*, std::string);
 void forward_euler2d_litho(int, double,double,double,double,double,double, double, int, arma::Mat<double>*,std::string);
 void forward_euler2d_litho_pb(int, double,double,double,double,double,double, double, int, arma::Mat<double>*,std::string);
+void close();
 
 #endif

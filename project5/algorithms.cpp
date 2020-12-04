@@ -29,7 +29,9 @@ void output(int n, arma::Mat<double> *dump, std::string filename){
     output_file << "\n";
 };
 
-
+void close(){
+    output_file.close();
+}
 
 void lusolve(double a, double b, double c, int n, arma::Col<double>* rhs, arma::Col<double>* sol){
     // solution is in sol
@@ -117,6 +119,7 @@ void cranky_nicholson(int n, double dx, double alpha, int number_of_steps_t,arma
         (*usolve)(n)=0;
         output(n,usolve,filename);
     }
+    output_file.close();
     
 };
 

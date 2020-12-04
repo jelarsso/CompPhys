@@ -35,19 +35,21 @@ def animate(filename):
 
 def compare_p5c():
     for dx in [0.1,0.01]:
-        T = 1
+        T = 0.1
         dt = 0.5*dx**2
         nt = int(round(T/dt))
         sb.run(["./p5c",str(dx),str(nt)])
         data_f = read_file("forward_euler.data")
         data_b = read_file("backward_euler.data")
         data_cn = read_file("cnicholson.data")
+        data_an = read_file("analytical.data")
         x = np.linspace(0,1,data_f.shape[1])
         
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x,y=data_f[-1,:],mode="lines",name="Forward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=data_b[-1,:],mode="lines",name="Backward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=data_cn[-1,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_f[-1,:],mode="lines",name="Forward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_b[-1,:],mode="lines",name="Backward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_cn[-1,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_an[-1,:],mode="lines",name="Analytical"))
         fig.update_xaxes(title="x / L")
         fig.update_yaxes(title="Difference / T")
         fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt} timesteps, dx = {dx}",font_size=12)
@@ -55,9 +57,11 @@ def compare_p5c():
         fig.show()
         
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x,y=data_f[nt//8,:],mode="lines",name="Forward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=data_b[nt//8,:],mode="lines",name="Backward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=data_cn[nt//8,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_f[nt//8,:],mode="lines",name="Forward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_b[nt//8,:],mode="lines",name="Backward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_cn[nt//8,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_an[nt//8,:],mode="lines",name="Analytical"))
+
         fig.update_xaxes(title="x / L")
         fig.update_yaxes(title="Difference / T")
         fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt//8} timesteps, dx = {dx}",font_size=12)
@@ -171,6 +175,6 @@ def p5d():
 
 if __name__=="__main__":
     #animate("cnicholson.data")
-    #compare_p5c()
+    compare_p5c()
     #animate_2d()
-    show_differences_litho()
+    #show_differences_litho()
