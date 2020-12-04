@@ -51,7 +51,6 @@ int main(int argc, char* argv[]){
         for (int i=0;i<nx+1;i++) u(i) = fn(t*alpha*dx*dx,i*dx);
         output(nx,&u,"analytical.data");
     }
-    u.print();
     close();
 
     return 0;

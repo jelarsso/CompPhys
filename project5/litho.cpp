@@ -36,6 +36,7 @@ int main(int argc, char* argv[]){
 
     double dx = std::atof(argv[1]); // in 150km units
     int nx = (int) (L/length_scale/dx);
+    int ny = nx*2;
     double sim_time = std::atof(argv[2]); // in Gy
     double alpha = 0.25;
     double dt = alpha*dx*dx;
@@ -66,9 +67,9 @@ int main(int argc, char* argv[]){
     }
 
 
-    forward_euler2d_litho_pb(nx, dx, alpha,  ulb, llb, 0, 0, 0, nt, &usolve, "litho_no_Q.data");
-    forward_euler2d_litho_pb(nx, dx, alpha,  ulb, llb, qupper, qmiddle, qlower, nt, &usolve, "litho_Q_pb.data");
-    forward_euler2d_litho(nx, dx, alpha,  ulb, llb, qupper, qmiddle, qlower, nt, &usolve, "litho_enriched.data");
+    forward_euler2d_litho_pb(nx, ny, dx, alpha,  ulb, llb, 0, 0, 0, nt, &usolve, "litho_no_Q.data");
+    forward_euler2d_litho_pb(nx, ny, dx, alpha,  ulb, llb, qupper, qmiddle, qlower, nt, &usolve, "litho_Q_pb.data");
+    forward_euler2d_litho(nx, ny, dx, alpha,  ulb, llb, qupper, qmiddle, qlower, nt, &usolve, "litho_enriched.data");
 
 
     return 0;
