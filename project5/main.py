@@ -70,9 +70,9 @@ def compare_p5c():
         
     
 def animate_2d():
-    data = np.loadtxt("litho_enriched.data")
-    nt = 1601
-    nx = 160
+    data = np.loadtxt("fe2d.data")
+    nt = 1001
+    nx = 101
     print(data.shape)
     data = data.reshape((nt,nx,nx))
     
@@ -141,33 +141,40 @@ def show_differences_litho():
     embed()
 
 
-def p5d():
-    sb.run(["./test"]) #,str(0.01),str(10000)])
-    data_f = read_file("fe2.data")
-    data_b = read_file("be2.data")
-    data_cn = read_file("cn2.data")
-    x = np.linspace(0,1,data_f.shape[1])
-    
-    y_analytic_long = np.linspace(0, 1, data_f.shape[1])
-    k = 1/np.e
-    y_analytic_short = np.zeros_like(x)
-    n = 1000
-    t = 1e-12
-    for i in range(1, n+1):
-        yi = 4*np.cos((2*n-1)*np.pi*x/2) *np.exp(-(2*n-1)**2*np.pi**2*t)
-        y_analytic_short = y_analytic_short + yi
+def compare_p5d():
+    for dx in [0.1,0.01]:
+        T = 0.1
+        dt = 0.5*dx**2
+        nt = int(round(T/dt))
+        sb.run(["./p5c",str(dx),str(nt)])
+        data_f = read_file("forward_euler.data")
+        data_b = read_file("backward_euler.data")
+        data_cn = read_file("cnicholson.data")
+        data_an = read_file("analytical.data")
+        x = np.linspace(0,1,data_f.shape[1])
         
-    y_analytic_short = y_analytic_short/10
-    y_analytic_short[:-1] = 1/y_analytic_short[:-1]
-    y_analytic_short[-1] = 1 
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=x,y=x+data_f[-1,:],mode="lines",name="Forward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_b[-1,:],mode="lines",name="Backward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_cn[-1,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_an[-1,:],mode="lines",name="Analytical"))
+        fig.update_xaxes(title="x / L")
+        fig.update_yaxes(title="Difference / T")
+        fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt} timesteps, dx = {dx}",font_size=12)
+        fig.write_image(f"p5c_comparisons_long_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
+        fig.show()
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=x,y=x+data_f[nt//8,:],mode="lines",name="Forward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_b[nt//8,:],mode="lines",name="Backward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_cn[nt//8,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_an[nt//8,:],mode="lines",name="Analytical"))
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=x,y=data_f[-1,:],mode="lines",name="Forward"))
-    fig.add_trace(go.Scatter(x=x,y=data_b[-1,:],mode="lines",name="Backward"))
-    fig.add_trace(go.Scatter(x=x,y=data_cn[-1,:],mode="lines",name="Cranky"))
-    #fig.add_trace(go.Scatter(x=x,y=y_analytic_long,mode="lines",name="Analytic"))
-    fig.add_trace(go.Scatter(x=x,y=y_analytic_short,mode="lines",name="Analytic short"))
-    fig.show()
+        fig.update_xaxes(title="x / L")
+        fig.update_yaxes(title="Difference / T")
+        fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt//8} timesteps, dx = {dx}",font_size=12)
+        fig.write_image(f"p5c_comparisons_short_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
+        fig.show()
 
 
 
@@ -175,7 +182,7 @@ def p5d():
 
 if __name__=="__main__":
     #animate("cnicholson.data")
-    #compare_p5c()
+    compare_p5c()
     #animate_2d()
     #show_differences_litho()
-    p5d()
+    #p5d()
