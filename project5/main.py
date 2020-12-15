@@ -175,6 +175,7 @@ def p5d():
 
 if __name__=="__main__":
     #animate("cnicholson.data")
-    compare_p5c()
+    #compare_p5c()
     #animate_2d()
     #show_differences_litho()
+    p5d()
