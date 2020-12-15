@@ -10,11 +10,17 @@ double radiohalflife(double t){
 }
 
 double fn(double t, double x){
-    int terms = 1000;
+    double tol = 1e-15; // double precision
     double val = 0;
-    for (int n=1;n<terms;n++){
-        val-= 2*(std::sin(pi*n) - pi*n*std::cos(pi*n))/(pi*pi*n*n)*std::exp(-n*n*pi*pi*t)*std::sin(n*pi*x);
+    int n = 1;
+    double this_term;
+    
+    while (this_term>tol){
+        this_term = 2*(std::sin(pi*n) - pi*n*std::cos(pi*n))/(pi*pi*n*n)*std::exp(-n*n*pi*pi*t)*std::sin(n*pi*x);
+        val-= this_term;
+        n++;
     }
+    
     return val;
 }
 

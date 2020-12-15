@@ -70,9 +70,9 @@ def compare_p5c():
         
     
 def animate_2d():
-    data = np.loadtxt("litho_enriched.data")
-    nt = 1601
-    nx = 160
+    data = np.loadtxt("fe2d.data")
+    nt = 1001
+    nx = 101
     print(data.shape)
     data = data.reshape((nt,nx,nx))
     
@@ -148,6 +148,6 @@ def show_differences_litho():
 
 if __name__=="__main__":
     #animate("cnicholson.data")
-    compare_p5c()
-    #animate_2d()
+    #compare_p5c()
+    animate_2d()
     #show_differences_litho()
