@@ -1,5 +1,6 @@
 import numpy as np
 import plotly.graph_objects as go
+import plotly.subplots as ps
 import subprocess as sb
 import pandas as pd
 from IPython import embed
@@ -44,27 +45,30 @@ def compare_p5c():
         data_cn = read_file("cnicholson.data")
         data_an = read_file("analytical.data")
         x = np.linspace(0,1,data_f.shape[1])
+        nx = data_f.shape[1]
+        print(nx)
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=x,y=x+data_f[-1,:],mode="lines",name="Forward-Euler"))
         fig.add_trace(go.Scatter(x=x,y=x+data_b[-1,:],mode="lines",name="Backward-Euler"))
         fig.add_trace(go.Scatter(x=x,y=x+data_cn[-1,:],mode="lines",name="Crank-Nicholson"))
         fig.add_trace(go.Scatter(x=x,y=x+data_an[-1,:],mode="lines",name="Analytical"))
-        fig.update_xaxes(title="x / L")
-        fig.update_yaxes(title="Difference / T")
-        fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt} timesteps, dx = {dx}",font_size=12)
+        
+        
+        fig.update_xaxes(title="x")
+        fig.update_yaxes(title="u(T,x)")
+        fig.update_layout(font_family="lmodern",title_text=f"Solutions after T={nt} timesteps, dx = {dx}, alpha = 0.5",font_size=12)
         fig.write_image(f"p5c_comparisons_long_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
         fig.show()
         
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x,y=x+data_f[nt//8,:],mode="lines",name="Forward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_b[nt//8,:],mode="lines",name="Backward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_cn[nt//8,:],mode="lines",name="Crank-Nicholson"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_an[nt//8,:],mode="lines",name="Analytical"))
-
-        fig.update_xaxes(title="x / L")
-        fig.update_yaxes(title="Difference / T")
-        fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt//8} timesteps, dx = {dx}",font_size=12)
+        fig.add_trace(go.Scatter(x=x,y=x+data_f[nt//10,:],mode="lines",name="Forward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_b[nt//10,:],mode="lines",name="Backward-Euler"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_cn[nt//10,:],mode="lines",name="Crank-Nicholson"))
+        fig.add_trace(go.Scatter(x=x,y=x+data_an[nt//10,:],mode="lines",name="Analytical"))
+        fig.update_xaxes(title="x")
+        fig.update_yaxes(title="u(T,x)")
+        fig.update_layout(font_family="lmodern",title_text=f"Solutions after T={nt//8} timesteps, dx = {dx}, alpha = 0.5",font_size=12)
         fig.write_image(f"p5c_comparisons_short_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
         fig.show()
         
