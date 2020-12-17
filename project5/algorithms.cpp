@@ -138,6 +138,7 @@ void cranky_nicholson(int n, double dx, double alpha, int number_of_steps_t,arma
 };
 
 void forward_euler2d(int n, double dx, double alpha, int number_of_steps_t, arma::Mat<double> *usolve,std::string filename){
+    // boundaries are 0.
     arma::Mat<double> u(n+1,n+1,arma::fill::zeros);
     for (int i=1; i<n; i++){
         for (int j=1;j<n;j++){
@@ -160,12 +161,14 @@ void forward_euler2d(int n, double dx, double alpha, int number_of_steps_t, arma
     output_file.close();
 };
 
-void forward_euler2d_litho(int nx, int ny, double dx, double alpha, double boundary_upper, double boundary_lower, double qupper, double qmiddle,double qlower,int number_of_steps_t, arma::Mat<double> *usolve, std::string filename){
+void forward_euler2d_litho(int nx, int ny, double dx, double alpha, double boundary_upper, double boundary_lower, double qupper, double qmiddle,double qlower, double w_subduct,int number_of_steps_t, arma::Mat<double> *usolve, std::string filename){
     arma::Mat<double> u(nx+1,ny+1,arma::fill::zeros);
 
     int i_bl = (int) (boundary_lower/dx);
     int i_bu = (int) (boundary_upper/dx);
     double dt = alpha*dx*dx;
+
+    int half_subduct = (int) (w_subduct/dx/2);
     
     for (int i=0; i<nx+1; i++){
         for (int j=0;j<ny+1;j++){
@@ -173,13 +176,6 @@ void forward_euler2d_litho(int nx, int ny, double dx, double alpha, double bound
         }
     }
     
-    /*
-    for (int i=1; i<n; i++){
-        for (int j=1;j<n;j++){
-            u(i,j) = init_func(dx*i,dx*j);
-            (*usolve)(i,j) = init_func(dx*i,dx*j);
-            };
-    }*/
     
     output(nx,ny,usolve,filename);
     
@@ -187,12 +183,17 @@ void forward_euler2d_litho(int nx, int ny, double dx, double alpha, double bound
         for (int i=1; i<nx; i++){
             for (int j=1;j<ny;j++){
                 (*usolve)(i,j) = u(i,j) + alpha*(u(i-1,j) + u(i+1,j) + u(i,j+1) + u(i,j-1) - 4*u(i,j));
-                if (j<boundary_upper){
+                if (i<i_bu){
                     (*usolve)(i,j) += qupper*dt;
-                }else if (j<boundary_lower){
+                }else if (i<i_bl){
                     (*usolve)(i,j) += qmiddle*dt;
                 }else{
-                    (*usolve)(i,j) += qlower*dt + radiohalflife(t*dt)*dt;
+                    if (j> ny/2 - half_subduct && j< ny/2 +half_subduct){
+                        (*usolve)(i,j) += qlower*dt + radiohalflife(t*dt)*dt;
+                    }else{
+                        (*usolve)(i,j) += qlower*dt;
+                    }
+                    
                 }
             } 
         }
@@ -217,24 +218,16 @@ void forward_euler2d_litho_pb(int nx, int ny, double dx, double alpha, double bo
             u(i,j) = (*usolve)(i,j);
         }
     }
-    /*
-    std::cout << "bounds : " << i_bl <<  " " << i_bu << "\n";
-    for (int i=1; i<n; i++){
-        for (int j=1;j<n;j++){
-            u(i,j) = init_func(dx*i,dx*j);
-            (*usolve)(i,j) = init_func(dx*i,dx*j);
-            };
-    }*/
     
     output(nx,ny,usolve,filename);
     
     for (int t=0; t<number_of_steps_t;t++){
-        for (int i=0; i<nx+1; i++){
-            for (int j=1;j<ny;j++){
-                (*usolve)(i,j) = u(i,j) + alpha*(u(periodic(i-1,nx),j) + u(periodic(i+1,nx),j) + u(i,j+1) + u(i,j-1) - 4*u(i,j));
-                if (j<boundary_upper){
+        for (int i=1; i<nx; i++){
+            for (int j=0;j<ny+1;j++){
+                (*usolve)(i,j) = u(i,j) + alpha*(u(i,periodic(j-1,ny)) + u(i,periodic(j+1,ny)) + u(i+1,j) + u(i-1,j) - 4*u(i,j));
+                if (i<i_bu){
                     (*usolve)(i,j) += qupper*dt;
-                }else if (j<boundary_lower){
+                }else if (i<i_bl){
                     (*usolve)(i,j) += qmiddle*dt;
                 }else{
                     (*usolve)(i,j) += qlower*dt;
