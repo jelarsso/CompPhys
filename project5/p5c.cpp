@@ -6,10 +6,20 @@
 const double pi = 3.1415926535897932;
 
 double radiohalflife(double t){
+    // Not in use in this file.
     return t;
 }
 
 double fn(double t, double x){
+    /*
+    double t: the time at which to find the solution.
+    double x: the position at which to find the solution.
+
+    The analytical solution of the diffusion equation with boundaries set to 0, and the initial condition given as -x.
+
+    return, double: the solution at t,x 
+    */
+
     double tol = 1e-14; // double precision
     double val = 0;
     int n = 1;
@@ -26,10 +36,16 @@ double fn(double t, double x){
 
 
 double init_func(double x, double y){
+    //Not used in this file.
     return 0;
 }
 
 double init_func(double x){
+    /*
+    double x: the position at which to return the initial condition.
+    
+    return, double: the initial condition for the algorithms at x
+    */
     return -x;
 }
 

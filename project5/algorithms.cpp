@@ -5,11 +5,17 @@
 #include<iomanip>
 
 int inline periodic(int indx, int size){
+    /*
+    Simple periodic function to allow periodic boundaries.
+    */
     return (indx+size)%size;
 };
 
 std::ofstream output_file;
 void output(int n, arma::Col<double> *dump, std::string filename){
+    /*
+    output the one dimensional data in the vector dump to filename.
+    */
     if (output_file.is_open()==false){
         output_file.open(filename);
     }
@@ -20,6 +26,9 @@ void output(int n, arma::Col<double> *dump, std::string filename){
 };
 
 void output(int n, arma::Mat<double> *dump, std::string filename){
+    /*
+    output the (n x n) two dimensional data in the matrix dump to filename.
+    */
     if (output_file.is_open()==false){
         output_file.open(filename);
     }
@@ -31,6 +40,10 @@ void output(int n, arma::Mat<double> *dump, std::string filename){
 };
 
 void output(int nx, int ny, arma::Mat<double> *dump, std::string filename){
+    /*
+    output the (nx x ny) two dimensional data in the matrix dump to filename.
+    */
+
     if (output_file.is_open()==false){
         output_file.open(filename);
     }
@@ -44,10 +57,11 @@ void output(int nx, int ny, arma::Mat<double> *dump, std::string filename){
 
 
 void close(){
-    output_file.close();
+    output_file.close(); // to make sure the file is closed
 }
 
 void lusolve(double a, double b, double c, int n, arma::Col<double>* rhs, arma::Col<double>* sol){
+    //LUsolve from project 1, only used by the functions below.
     // solution is in sol;
 
     n = n-2;
@@ -70,6 +84,11 @@ void lusolve(double a, double b, double c, int n, arma::Col<double>* rhs, arma::
 };
 
 void forward_euler(int n, double dx, double alpha, int number_of_steps_t, arma::Col<double> *usolve,std::string filename){
+    /*
+    perfrom the forward euler in one dimension with int n + 1 grid points an dx grid spacings. alpha = dt/dx/dx and int number_of_steps_t is self-explanantory.
+    *usolve is a pointer to a armadillo column vector of size n+1 where the solution is stored.
+    The data is written to filename during the simulation.
+    */
     arma::Col<double> u(n+1);
     for (int i=1; i<n; i++){
         u(i) = init_func(dx*i);
@@ -92,6 +111,11 @@ void forward_euler(int n, double dx, double alpha, int number_of_steps_t, arma::
 };
 
 void backward_euler(int n, double dx, double alpha, int number_of_steps_t, arma::Col<double> *usolve,std::string filename){
+    /*
+    perfrom the backward euler in one dimension with int n + 1 grid points an dx grid spacings. alpha = dt/dx/dx and int number_of_steps_t is self-explanantory.
+    *usolve is a pointer to a armadillo column vector of size n+1 where the solution is stored.
+    The data is written to filename during the simulation.
+    */
     arma::Col<double> uprev(n+1);
     for (int i=1; i<n; i++){
         (*usolve)(i) = init_func(dx*i);
@@ -117,6 +141,11 @@ void backward_euler(int n, double dx, double alpha, int number_of_steps_t, arma:
 
 
 void cranky_nicholson(int n, double dx, double alpha, int number_of_steps_t,arma::Col<double> *usolve, std::string filename){
+    /*
+    perfrom the Crank Nicolson algorithm in one dimension with int n + 1 grid points an dx grid spacings. alpha = dt/dx/dx and int number_of_steps_t is self-explanantory.
+    *usolve is a pointer to a armadillo column vector of size n+1 where the solution is stored.
+    The data is written to filename during the simulation.
+    */
     arma::Col<double> rhs(n+1);
 
     for (int i=1; i<n; i++){
@@ -140,6 +169,11 @@ void cranky_nicholson(int n, double dx, double alpha, int number_of_steps_t,arma
 };
 
 void forward_euler2d(int n, double dx, double alpha, int number_of_steps_t, arma::Mat<double> *usolve,std::string filename){
+    /*
+    perfrom the forward euler in two dimension with int (n + 1)x(n +1) grid points an dx grid spacings. alpha = dt/dx/dx and int number_of_steps_t is self-explanantory.
+    *usolve is a pointer to a armadillo matrix of size (n+1)x(n+1) where the solution is stored.
+    The data is written to filename during the simulation.
+    */
     // boundaries are 0.
     arma::Mat<double> u(n+1,n+1,arma::fill::zeros);
     for (int i=1; i<n; i++){
@@ -163,7 +197,18 @@ void forward_euler2d(int n, double dx, double alpha, int number_of_steps_t, arma
     output_file.close();
 };
 
+// The following two functions are specific adaptions of forward_euler2d to the lithosphere simulations and can probably not be understood without that context provided by the paper and project description.
+
 void forward_euler2d_litho(int nx, int ny, double dx, double alpha, double boundary_upper, double boundary_lower, double qupper, double qmiddle,double qlower, double w_subduct,int number_of_steps_t, arma::Mat<double> *usolve, std::string filename){
+    /* nb: all variables must be scaled beforehand
+    perfrom the forward euler in two dimension with int (nx + 1)x(ny +1) grid points an dx grid spacings.
+    This allows specific boundary conditions in along the y-edges (x=0 or x=nx*dx) set by the inital condition read from *usolve.
+    qupper,qlower,qmiddle is the heat production in the three zones described in the method section of the paper, the division between these three region is set by boundary_lower/upper.
+    w_subduct is the width of the subduction area that is enriched.
+    alpha = dt/dx/dx and int number_of_steps_t is self-explanantory.
+    *usolve is a pointer to a armadillo matrix of size (n+1)x(n+1) where the intial condition is stored beforehand, after the simulation the solution is stored here.
+    The data is written to filename during the simulation.
+    */
     arma::Mat<double> u(nx+1,ny+1,arma::fill::zeros);
 
     int i_bl = (int) (boundary_lower/dx);
@@ -209,6 +254,15 @@ void forward_euler2d_litho(int nx, int ny, double dx, double alpha, double bound
 
 
 void forward_euler2d_litho_pb(int nx, int ny, double dx, double alpha, double boundary_upper, double boundary_lower, double qupper, double qmiddle,double qlower,int number_of_steps_t, arma::Mat<double> *usolve, std::string filename){
+    /* nb: all variables must be scaled beforehand
+    perfrom the forward euler in two dimension with int (nx + 1)x(ny +1) grid points an dx grid spacings.
+    This allows specific boundary conditions in along the y-edges (x=0 or x=nx*dx) set by the inital condition read from *usolve and uses PERIODIC BOUNDARIES along the x-edges!!
+    qupper,qlower,qmiddle is the heat production in the three zones described in the method section of the paper, the division between these three region is set by boundary_lower/upper.
+    w_subduct is the width of the subduction area that is enriched.
+    alpha = dt/dx/dx and int number_of_steps_t is self-explanantory.
+    *usolve is a pointer to a armadillo matrix of size (n+1)x(n+1) where the intial condition is stored beforehand, after the simulation the solution is stored here.
+    The data is written to filename during the simulation.
+    */
     arma::Mat<double> u(nx+1,ny+1,arma::fill::zeros);
     double dt = alpha*dx*dx;
 

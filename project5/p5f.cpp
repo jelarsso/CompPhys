@@ -7,31 +7,41 @@ const double pi = 3.1415926535897932;
 
 
 double init_func(double x, double y){
-    /*if ((x-0.5)*(x-0.5) + (y-0.5)*(y-0.5) < 0.1){
-        return 1;
-    }else{
-        return 0;
-    }*/
+    /*
+    double x: the x position at which to return the initial condition.
+    double y: the y position at which to return the initial condition.
+    
+    return, double: the initial condition for the algorithms at (x,y)
+    */
     return -x;
 }
 
-double init_func(double x){
+double init_func(double x){ // not used
     return -x;
 }
 
-double radiohalflife(double t){
+double radiohalflife(double t){// not used
     return t;
 }
 
 
 double coeffs(int nx, int ny, double x, double y){
+    // Fourier coeffs A_nx B_ny. Used only by the function fn
     double lx = 1;
     double ly = 1;
     return (4/(lx*ly))*((ly/(ny*pi))*std::cos(ny*pi)-ly/(ny*pi))*(-lx*lx/(pi*nx)*std::cos(nx*pi))*std::sin(nx*pi*x/lx)*std::sin(ny*pi*y/ly);
 }
 
 double fn(double t, double x, double y){
-    double tol = 1e-14; // double precision
+    /*
+    double t: the time at which to find the solution.
+    double x: the x position at which to find the solution.
+    double y: the y position at which to find the solution.
+
+    The analytical solution of the 2d diffusion equation with boundaries set to 0, and the initial condition given as -x.
+
+    return, double: the solution at (t,x,y) 
+    */
     double val = 0;
 
     double lx = 1;

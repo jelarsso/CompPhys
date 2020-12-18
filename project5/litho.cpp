@@ -10,21 +10,24 @@ double time_scale = 1e9*365*24*60*60; //s
 double temp_scale = 1; //C
 
 double radiohalflife(double t){
+    /*
+    returns the remaining heat produced by the radioactive enrichment at time (double) t.
+    */
     double q = (0.5e-6/2.5*length_scale*length_scale/temp_scale)*(0.4*std::pow(0.5,t/4.47) + 0.4*std::pow(0.5,t/14.0) + 0.2*std::pow(0.5,t/1.25));
     return q;
 }
 
 
-double init_func(double x, double y){
+double init_func(double x, double y){ // not used
         return 0;
 }
 
-double init_func(double x){
+double init_func(double x){ //not used
     return -x;
 }
 
 int main(int argc, char* argv[]){
-    //cli args: dx, simulation time in Gy, int of how many times wider in the y-direction the simulation should be good = 3-4.
+    //cli args: dx, simulation time in Gy.
 
     //Physical variables
     double L = 120e3; //m

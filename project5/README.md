@@ -4,6 +4,8 @@ We chose the Diffusion Project and did the optional Lithosphere part.
 This folder contains the code for the project in divided in the following files.
 Make sure to edit the makefile to point the gcc-compiler to the correct location for the armadillo-library.
 
+Requirements are recent versions of python (>3.7) and the module plotly along with the scipy-stack.
+And a c++-compiler with armadillo (>9.900.2)
 
 algorithms.cpp - contains the functions implemented in .cpp and its .hpp header file.
 
