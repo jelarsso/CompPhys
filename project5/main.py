@@ -1,18 +1,19 @@
 import numpy as np
 import plotly.graph_objects as go
 import plotly.subplots as ps
+import plotly.express as px
 import subprocess as sb
 import pandas as pd
 from IPython import embed
 
 
 def read_file(filename):
+    # Reads the dumpfile
     return np.loadtxt(filename)
-    
-
 
 
 def animate(filename):
+    # Animates the one-dimensional solution
     sb.run(["./p5c",str(0.01),str(10000)])
     datas = read_file(filename)
     x = np.linspace(0,1,101)
@@ -35,11 +36,12 @@ def animate(filename):
 
 
 def compare_p5c():
+    # plots all solutions in one dimension with different dx
     for dx in [0.1,0.01]:
         T = 0.1
         dt = 0.5*dx**2
         nt = int(round(T/dt))
-        sb.run(["./p5c",str(dx),str(nt)])
+        sb.run(["./p5c",str(dx),str(nt),str(.5)])
         data_f = read_file("forward_euler.data")
         data_b = read_file("backward_euler.data")
         data_cn = read_file("cnicholson.data")
@@ -74,6 +76,7 @@ def compare_p5c():
         
     
 def animate_2d():
+    # Animates two dimensional solutions
     data = np.loadtxt("fe2d.data")
     nt = 1001
     nx = 101
@@ -120,7 +123,7 @@ def show_differences_litho():
     fig.update_xaxes(title="Depth / L")
     fig.update_yaxes(title="Relative Difference / ")
     fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt} timesteps",font_size=12)
-    #fig.write_image(f"p5c_comparisons_long_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
+    fig.write_image(f"p5c_comparisons_long_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
 
 
@@ -145,48 +148,177 @@ def show_differences_litho():
     embed()
 
 
-def compare_p5d():
-    for dx in [0.1,0.01]:
-        T = 0.1
-        dt = 0.5*dx**2
+def p5d_dt_analysis():
+    # plots numerical deviations as a function of timesteps
+    sum_f = []
+    sum_b = []
+    sum_cn = []
+    xx = []    
+    for alpha in [.498,  .45, .4, .35, .3, .25, .2, .15, .1]:
+        dx = .01
+        T = .01
+        dt = alpha*dx**2
         nt = int(round(T/dt))
-        sb.run(["./p5c",str(dx),str(nt)])
+        sb.run(["./p5c",str(dx),str(nt),str(alpha)])
+        
         data_f = read_file("forward_euler.data")
-        data_b = read_file("backward_euler.data")
-        data_cn = read_file("cnicholson.data")
-        data_an = read_file("analytical.data")
         x = np.linspace(0,1,data_f.shape[1])
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x,y=x+data_f[-1,:],mode="lines",name="Forward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_b[-1,:],mode="lines",name="Backward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_cn[-1,:],mode="lines",name="Crank-Nicholson"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_an[-1,:],mode="lines",name="Analytical"))
-        fig.update_xaxes(title="x / L")
-        fig.update_yaxes(title="Difference / T")
-        fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt} timesteps, dx = {dx}",font_size=12)
-        fig.write_image(f"p5c_comparisons_long_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
-        fig.show()
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=x,y=x+data_f[nt//8,:],mode="lines",name="Forward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_b[nt//8,:],mode="lines",name="Backward-Euler"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_cn[nt//8,:],mode="lines",name="Crank-Nicholson"))
-        fig.add_trace(go.Scatter(x=x,y=x+data_an[nt//8,:],mode="lines",name="Analytical"))
+        data_f = x+read_file("forward_euler.data")
+        data_b = x+read_file("backward_euler.data")
+        data_cn = x+read_file("cnicholson.data")
+        data_an = x+read_file("analytical.data")
 
-        fig.update_xaxes(title="x / L")
-        fig.update_yaxes(title="Difference / T")
-        fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt//8} timesteps, dx = {dx}",font_size=12)
-        fig.write_image(f"p5c_comparisons_short_dx{dx}.pdf",width=600*1.41,height=600,scale=2)
-        fig.show()
+        pf = []; pb = []; pcn = []
+        for i in range(len(data_f[-1,:])):
+            pf.append(abs(data_f[-1,i] - data_an[-1,i])) 
+            pb.append(abs(data_b[-1,i] - data_an[-1,i])) 
+            pcn.append(abs(data_cn[-1,i] - data_an[-1,i])) 
 
-
-
+        sum_f.append(np.std(pf))
+        sum_b.append(np.std(pb))
+        sum_cn.append(np.std(pcn))
+        xx.append(dt)
     
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=xx,y=sum_f,mode="lines+markers",name="Forward-Euler"))
+    fig.add_trace(go.Scatter(x=xx,y=sum_b,mode="lines+markers",name="Backward-Euler"))
+    fig.add_trace(go.Scatter(x=xx,y=sum_cn,mode="lines+markers",name="Crank-Nicolson"))
+    fig.update_xaxes(title=f"Timestep / dt")
+    fig.update_yaxes(title=f"Stanard deviation / s")
+    fig.update_layout(font_family="lmodern",title_text=f"Standard deviation from analytical solution after T={nt} timesteps, dx = {dx}",font_size=12)
+    fig.write_image(f"p5d_best_sol.pdf",width=600*1.41,height=600,scale=2)   
+    fig.show()
+
+
+def p5d_log_log_dt():
+    # Log-log plot of deviations as function of timestep
+    sum_b = []
+    sum_cn = []
+    xx = []    
+
+    for alpha in [ 30, 25, 20, 15, 10, 1]:
+        dx = .01
+        T = .01
+        dt = alpha*dx**2
+        nt = int(round(T/dt))
+        sb.run(["./p5c",str(dx),str(nt),str(alpha)])
+        
+        data_f = read_file("forward_euler.data")
+        x = np.linspace(0,1,data_f.shape[1])
+        data_f = x+read_file("forward_euler.data")
+        data_b = x+read_file("backward_euler.data")
+        data_cn = x+read_file("cnicholson.data")
+        data_an = x+read_file("analytical.data")
+
+        pf = []; pb = []; pcn = []
+        for i in range(len(data_f[-1,:])):
+            pb.append(abs(data_b[-1,i] - data_an[-1,i])) 
+            pcn.append(abs(data_cn[-1,i] - data_an[-1,i])) 
+
+        sum_b.append(np.std(pb))
+        sum_cn.append(np.std(pcn))
+        xx.append(dt)
+    
+    lgx = np.log10(xx)
+    lgb = np.log10(sum_b)
+    lgcn = np.log10(sum_cn)
+
+    fit1 = np.polyfit(lgx, lgb, 1, full=True)
+    line1 = fit1[0][0]*lgx+fit1[0][1]
+
+    fit2 = np.polyfit(lgx, lgcn, 1, full=True)
+    line2 = fit2[0][0]*lgx+fit2[0][1]
+
+    print('Stigning for BE:', fit1[0][0], '+-', fit1[1][0])
+    print('Stigning for CN:', fit2[0][0], '+-', fit2[1][0])
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=lgx,y=lgb,mode="lines+markers",name="Backward-Euler",line = dict(color='royalblue', width=2)))
+    fig.add_trace(go.Scatter(x=lgx,y=lgcn,mode="lines+markers",name="Crank-Nicolson",line = dict(color='firebrick', width=2)))
+    fig.add_trace(go.Scatter(x=lgx,y=line1,name="Backward-Euler reg",line = dict(color='royalblue', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=lgx,y=line2,name="Crank-Nicolson reg",line = dict(color='firebrick', width=2, dash='dash')))    
+    fig.update_xaxes(title=f"Timestep / log(dt)")
+    fig.update_yaxes(title=f"Standard deviation / log(s)")
+    fig.update_layout(font_family="lmodern",title_text=f"Standard deviation from analytical solution, dx = {dx} (LOG-LOG)",font_size=12)
+    fig.write_image(f"p5d_error_rate.pdf",width=600*1.41,height=600,scale=2)   
+    fig.show()
+
+
+def p5d_log_log_dx():
+    # Log-log plot of deviations as function of steplength
+    sum_b = []
+    sum_cn = []
+    xx = []    
+    lens = []
+
+    for alpha in [80, 70, 60, 50, 40, 30, 20, 10, 8, 7, 6, 5, 3, 2, 1]:
+        dt = .01
+        T = 1
+        dx = np.sqrt(dt/alpha)
+        nt = int(round(T/dt))
+        sb.run(["./p5c",str(dx),str(nt),str(alpha)])
+        
+        data_f = read_file("forward_euler.data")
+        x = np.linspace(0,1,data_f.shape[1])
+        data_f = x+read_file("forward_euler.data")
+        data_b = x+read_file("backward_euler.data")
+        data_cn = x+read_file("cnicholson.data")
+        data_an = x+read_file("analytical.data")
+
+
+        print('nx = ',np.sqrt(alpha/dt))
+        pf = []; pb = []; pcn = []
+        for i in range(len(data_f[-1,::alpha])):
+            pb.append(abs(data_b[-1,i] - data_an[-1,i])) 
+            pcn.append(abs(data_cn[-1,i] - data_an[-1,i])) 
+        
+        sum_b.append(np.std(pb))
+        sum_cn.append(np.std(pcn))
+        xx.append(dx)
+        lens.append(len(data_f[-1]))
+
+    sum_b = np.array(sum_b)
+    sum_cn = np.array(sum_cn)
+    xx = np.array(xx)    
+    lens = np.array(lens)
+    sum_b = sum_b/lens
+    sum_cn = sum_cn/lens
+
+    lgx = np.log10(xx)
+    lgb = np.log10(sum_b)
+    lgcn = np.log10(sum_cn)
+
+    fit1 = np.polyfit(lgx, lgb, 1, full=True)
+    line1 = fit1[0][0]*lgx+fit1[0][1]
+    print('residuals 1: ', fit1[1][0])
+
+    fit2 = np.polyfit(lgx, lgcn, 1, full=True)
+    line2 = fit2[0][0]*lgx+fit2[0][1]
+    print('residuals 2: ', fit2[1][0])
+
+    print('Stigning for BE:', fit1[0][0])
+    print('Stigning for CN:', fit2[0][0])
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=lgx,y=lgb,mode="lines+markers",name="Backward-Euler",line = dict(color='royalblue', width=2),))
+    fig.add_trace(go.Scatter(x=lgx,y=lgcn,mode="lines+markers",name="Crank-Nicolson",line = dict(color='firebrick', width=2)))
+    fig.add_trace(go.Scatter(x=lgx,y=line1,
+        name="Backward-Euler reg",
+        line = dict(color='royalblue', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=lgx,y=line2,
+        name="Crank-Nicolson reg",
+        line = dict(color='firebrick', width=2, dash='dash'))) 
+  
+    fig.update_xaxes(title=f"Steplength / log(dx)")
+    fig.update_yaxes(title=f"Standard deviation / log(s)")
+    fig.update_layout(font_family="lmodern",title_text=f"Standard deviation from analytical solution after T={nt} timesteps, dt = {dt} (LOG-LOG)",font_size=12)
+    fig.write_image(f"p5d_error_rate_dx.pdf",width=600*1.41,height=600,scale=2)   
+    fig.show()
+
 
 if __name__=="__main__":
     #animate("cnicholson.data")
-    compare_p5c()
+    #compare_p5c()
     #animate_2d()
     #show_differences_litho()
-    #p5d()
+    #p5d_dt_analysis()
+    #p5d_log_log_dt
+    #p5d_log_log_dx

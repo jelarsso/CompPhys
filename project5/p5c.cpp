@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
     int nt = std::atoi(argv[2]);
 
     int nx = (int) (L/dx);
-    double alpha = 0.5;
+    double alpha = std::atof(argv[3]);
     std::cout << dx << " " << nx << "\n";
 
     arma::Col<double> usolve(nx+1,arma::fill::zeros);
