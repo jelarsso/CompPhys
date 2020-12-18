@@ -127,7 +127,7 @@ def animate_2d():
 
 
 def p5f():
-    
+    #make plots of the two-dimensional forward euler solutions and errors.
     sb.run(["./p5f",str(0.01),str(1000),str(0.25)])
     nt = 1000+1
     nx = 100+1
@@ -182,8 +182,10 @@ def p5f():
 
         stds.append(np.sum((data_a[-1,::(nx)//4,::(nx)//4][1:-1,1:-1]-data_f[-1,::(nx)//4,::(nx)//4][1:-1,1:-1])**2))
     
+    #these values are from a previous run of the above for loop:
     stds = [0.0019045588662245931, 1.1071996881704011e-07, 1.845193450238234e-12, 3.98819614687517e-15]
     dxs = [0.25,       0.0625,     0.015625,   0.00390625]
+
     print(stds)
     print(dxs)
     import scipy.stats as ss
@@ -232,11 +234,15 @@ def p5f():
     
 
 def show_differences_litho():
+    #plot the quantities of interest for the lithosphere simulation.    
     nt = 401
     nx = 80
     ny = 159
     islice = 80
     print(nt*nx*ny)
+    sb.run(["make","lithos"])
+    sb.run(["./litho", "0.01", "1"])
+
     data = np.loadtxt("litho_enriched.data")
     data_enriched = data.reshape((nt,nx,ny))
     data = np.loadtxt("litho_no_Q.data")
@@ -263,7 +269,7 @@ def show_differences_litho():
     fig.update_layout(font_family="lmodern",title_text=f"Lithosphere slice through center after 1 Gy",font_size=12)
     fig.write_image(f"litho_temps.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
-    """
+    
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x,y=(100*data_steay2[-1,:,islice]-data_steady[-1,:,islice])/data_steady[-1,:,islice],mode="lines",name="Relative pre-enriched"))
     fig.add_trace(go.Scatter(x=x,y=(100*data_enriched[-1,:,islice]-data_steady[-1,:,islice])/data_steady[-1,:,islice],mode="lines",name="Relative enriched"))
@@ -272,7 +278,6 @@ def show_differences_litho():
     fig.update_layout(font_family="lmodern",title_text=f"Relative Difference from the steady state after 1 Gy",font_size=12)
     fig.write_image(f"litho_relative_differences.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
-    """
     
     fig = ps.make_subplots(rows=1,cols=2,subplot_titles=("After 0.25 Gy","After 1 Gy"))
     fig.append_trace(go.Contour(x=x,y=y,z=data_enriched[100,:,:],coloraxis="coloraxis"),row=1,col=1)
@@ -285,7 +290,7 @@ def show_differences_litho():
     fig.update_layout(coloraxis_colorbar=dict(title="Temperature / C"))
     fig.write_image(f"litho_temp_contour.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
-    """
+    
     
     ds = data_steady[-1,:,islice]
     ds2 = data_steay2[-1,:,islice]
@@ -305,13 +310,16 @@ def show_differences_litho():
     ),
     frames=[go.Frame(data=[go.Scatter(x=x, y=(de[i,:]-ds)/ds)],layout=go.Layout(title_text=f"Frame {i}/{nt}")) for i in range(0,nt,10)])
     fig.show()
-    #embed()"""
+
 
 def animate_contour():
+    #Animate a contour plot
     nt = 401
     nx = 80
     ny = 159
     print(nt*nx*ny)
+    sb.run(["make","lithos"])
+    sb.run(["./litho", "0.01", "1"])
     data = np.loadtxt("litho_enriched.data")
     data_enriched = data.reshape((nt,nx,ny))
 
@@ -319,8 +327,27 @@ def animate_contour():
     y = np.linspace(0,2,ny)
 
 
+    fig = go.Figure(
+    data=[go.Contour(x=y, y=x,z=data_enriched[0,:,:])],
+    layout=go.Layout(
+        xaxis=dict(range=[np.min(y), np.max(y)], autorange=False),
+        yaxis=dict(range=[np.min(x), np.max(x)], autorange=False),
+        #zaxis=dict(range=[np.min(data_enriched), np.max(data_enriched)], autorange=False),
+        title="Start Title",
+        updatemenus=[dict(
+            type="buttons",
+            buttons=[dict(label="Play",
+                          method="animate",
+                          args=[None,{"frame": {"duration": 1, "redraw": True},"fromcurrent": False, "transition": {"duration": 0}}])])]
+    ),
+    frames=[go.Frame(data=[go.Contour(x=y, y=x, z=data_enriched[i,:,:])],layout=go.Layout(title_text=f"Time-step {i}/{nt}")) for i in range(0,nt)])
+    fig.show()
+
+
+
+
 def p5d_dt_analysis():
-    # plots numerical deviations as a function of timesteps
+    # plots numerical deviations / error as a function of timesteps
     sum_f = []
     sum_b = []
     sum_cn = []
@@ -366,6 +393,7 @@ def p5d_log_log_dt():
     sum_b = []
     sum_cn = []
     xx = []    
+    sb.run(["make","5c"])
 
     for alpha in [ 30, 25, 20, 15, 10, 1]:
         dx = .01
@@ -420,6 +448,8 @@ def p5d_log_log_dx():
     sum_cn = []
     xx = []    
     lens = []
+    sb.run(["make","5c"])
+
 
     for alpha in [80, 70, 60, 50, 40, 30, 20, 10, 8, 7, 6, 5, 3, 2, 1]:
         dt = .01
@@ -486,8 +516,10 @@ def p5d_log_log_dx():
 
 
 if __name__=="__main__":
+    #Choose one!:
+
     #animate("cnicholson.data")
-    #compare_p5c()
+    compare_p5c()
     #animate_2d()
     #show_differences_litho()
     #p5d_dt_analysis()

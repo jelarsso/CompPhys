@@ -2,7 +2,7 @@
 #include <armadillo>
 #include <iostream>
 #include <cmath>
-
+#include<iomanip>
 const double pi = 3.1415926535897932;
 
 double radiohalflife(double t){
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
     cranky_nicholson(nx,dx,alpha,nt,&usolve,"cnicholson.data");
     close();
 
-    std::cout << nx+1 << " " << nt+1 << std::endl;
+    std::cout << "nx = "<< nx+1 << " nt = " << nt+1 << std::endl;
 
     arma::Col<double> u(nx+1,arma::fill::zeros);
     for (double t=0;t<nt+1; t++){
