@@ -24,26 +24,24 @@ double radiohalflife(double t){
 }
 
 
+double coeffs(int nx, int ny, double x, double y){
+    double lx = 1;
+    double ly = 1;
+    return (4/(lx*ly))*((ly/(ny*pi))*std::cos(ny*pi)-ly/(ny*pi))*(-lx*lx/(pi*nx)*std::cos(nx*pi))*std::sin(nx*pi*x/lx)*std::sin(ny*pi*y/ly);
+}
+
 double fn(double t, double x, double y){
     double tol = 1e-14; // double precision
     double val = 0;
-    int nx = 1;
-    int ny = 1;
-    double this_term;
-
 
     double lx = 1;
     double ly = 1;
     
-    while (nx<100){
-        while (ny<100){
-            this_term = std::sin(nx*pi*x/lx)*std::sin(ny*pi*y/ly)*((-lx*lx/(nx*pi)*std::cos(nx*pi))*(-ly/(pi*ny)+ly/(ny*pi)*std::cos(pi*ny)));
-            val -= 4/lx/ly*(this_term)*std::exp( - nx*nx*pi*pi*t/lx/lx  - ny*ny*pi*pi*t/ly/ly );
-            ny++;
+    for (int i=1;i<50;i++){
+        for (int j=1; j<50; j++){
+            val += coeffs(i,j,x,y)*std::exp(-i*i*pi*pi*t/lx/lx-j*j*pi*pi*t/ly/ly);
         }
-        nx++;
     }
-    
     return val;
 }
 
@@ -52,10 +50,10 @@ double fn(double t, double x, double y){
 int main(int argc, char* argv[]){
     double dx = std::atof(argv[1]);
     double L = 1;
-    int nt = std::atoi(argv[2]);
-
     int nx = (int) (L/dx);
-    double alpha = 0.25;
+    int nt = std::atoi(argv[2]);
+    double alpha = std::atof(argv[3]);
+
     std::cout << "dx = " << dx << "  nx = " << nx << " nt = " << nt << "\n";
 
     arma::Mat<double> usolve(nx+1,nx+1,arma::fill::zeros);

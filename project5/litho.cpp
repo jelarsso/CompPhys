@@ -24,6 +24,8 @@ double init_func(double x){
 }
 
 int main(int argc, char* argv[]){
+    //cli args: dx, simulation time in Gy, int of how many times wider in the y-direction the simulation should be good = 3-4.
+
     //Physical variables
     double L = 120e3; //m
     double upper_layer_boundary = 20e3; //m
@@ -40,7 +42,7 @@ int main(int argc, char* argv[]){
     int nx = (int) (L/length_scale/dx);
     int ny = nx*2;
     double sim_time = std::atof(argv[2]); // in Gy
-    double alpha = 0.25;
+    double alpha = 0.25; //stability condition
     double dt = alpha*dx*dx;
     int nt = (int) (sim_time/dt);
 

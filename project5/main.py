@@ -99,7 +99,6 @@ def animate_2d():
     data = np.loadtxt("analytical2d.data")
     nt = 101
     nx = 101
-    print(data.shape)
     data = data.reshape((nt,nx,nx))
     
 
@@ -108,7 +107,7 @@ def animate_2d():
     z = data[0,:,:]
     
     fig = go.Figure(
-    data=[go.Surface(z=z.T,x=x, y=y)],
+    data=[go.Surface(z=z,x=x, y=y)],
     layout=go.Layout(
         xaxis=dict(range=[np.min(x), np.max(x)], autorange=False),
         yaxis=dict(range=[np.min(y), np.max(y)], autorange=False),
@@ -119,13 +118,15 @@ def animate_2d():
                           method="animate",
                           args=[None,{"frame": {"duration": 1, "redraw": True},"fromcurrent": False, "transition": {"duration": 0}}])])]
     ),
-    frames=[go.Frame(data=[go.Surface(z=data[i,:,:].T,x=x, y=y)],layout=go.Layout(title_text=f"Frame {i+1}/{data[:,0,0].size}")) for i in range(0,data.shape[0],10)])
+    frames=[go.Frame(data=[go.Surface(z=data[i,:,:],x=x, y=y)],layout=go.Layout(title_text=f"Frame {i+1}/{data[:,0,0].size}")) for i in range(0,data.shape[0],10)])
     fig.show()
 
 
 
 def p5f():
-    nt = 100+1
+    
+    sb.run(["./p5f",str(0.01),str(1000),str(0.25)])
+    nt = 1000+1
     nx = 100+1
 
     data_f = np.loadtxt("fe2d.data")
@@ -137,15 +138,95 @@ def p5f():
     x = np.linspace(0,1,nx)
     xx,yy = np.meshgrid(x,x)
 
-    fig = ps.make_subplots(rows=1,cols=2)
-    fig.append_trace(go.Heatmap(z=data_f[-1,:,:],x=x,y=x,coloraxis="coloraxis"),row=1,col=1)
-    fig.append_trace(go.Heatmap(z=data_a[-1,:,:],x=x,y=x,coloraxis="coloraxis"),row=1,col=2)
+    fig = ps.make_subplots(rows=1,cols=2,subplot_titles=("Forward-Euler", "Analytical"))
+    fig.append_trace(go.Contour(z=yy+data_f[-1,:,:],x=x,y=x,coloraxis="coloraxis"),row=1,col=1)
+    fig.append_trace(go.Contour(z=yy+data_a[-1,:,:],x=x,y=x,coloraxis="coloraxis"),row=1,col=2)
     fig.update_yaxes(title="x")
     fig.update_xaxes(title="y")
     
     fig.update_layout(coloraxis=dict(colorscale='Bluered_r'),coloraxis_colorbar=dict(title="u(x,y)"), showlegend=False)
-    fig.update_layout(font_family="lmodern",title_text=f"Solutions after T={0} timesteps, dx = {0.01}, alpha = 0.25",font_size=12)
+    fig.update_layout(font_family="lmodern",title_text=f"Solutions after T={nt-1} timesteps, dx = {0.01}, alpha = 0.25",font_size=12)
+    fig.write_image(f"p5f_2d_sol_long.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
+    
+    stds = []
+    nxs = [ 4**i - 1 for i in range(1,5)]#np.linspace(10,50,20) #[0.1,0.01,0.001]
+    nt = 1000
+    dt = 0.001/nt
+    for nx in nxs:
+        dx = 1/(nx+1)
+        alpha = dt/dx/dx
+        out = sb.run(["./p5f",str(dx),str(nt),str(alpha)],capture_output=True)
+        nx = int(str(out.stdout).split(" ")[6])
+        print("nx = ", nx+1, " nt = ", nt, " dx = ", dx, " dt = ", dt, " alpha = ", alpha)
+
+        data_f = np.loadtxt("fe2d.data")
+        data_f = data_f.reshape((nt+1,nx+1,nx+1))
+
+        data_a = np.loadtxt("analytical2d.data")
+        data_a = data_a.reshape((nt+1,nx+1,nx+1))
+
+        #x = np.linspace(0,1,nx-1,endpoint=False)
+        x = np.arange(0,1+1e-10,dx)
+        xx,yy = np.meshgrid(x,x)
+
+        print("x ", x.shape)
+        print("x = ", x)
+        print("x slice ",x[::(nx)//4][1:-1])
+        print("x slice ",x[::(nx)//4][1:-1].shape)
+        print("data : ", data_f[-1,::(nx)//4,::(nx)//4][1:-1,1:-1])
+        #print(data_a[0,1:-1:nx//4,1:-1:nx//4].shape)
+
+        stds.append(np.sum((data_a[-1,::(nx)//4,::(nx)//4][1:-1,1:-1]-data_f[-1,::(nx)//4,::(nx)//4][1:-1,1:-1])**2))
+    
+    stds = [0.0019045588662245931, 1.1071996881704011e-07, 1.845193450238234e-12, 3.98819614687517e-15]
+    dxs = [0.25,       0.0625,     0.015625,   0.00390625]
+    print(stds)
+    print(dxs)
+    import scipy.stats as ss
+    print(ss.linregress(np.log10(dxs),np.log10(stds)))
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=np.log10(dxs),y=np.log10(np.asarray(stds))))
+    fig.update_xaxes(title="log(dx)")
+    fig.update_yaxes(title="log(standard deviation)")
+    fig.update_layout(font_family="lmodern",title_text="The standard deviation of the difference between the analytical and numerical solution.",font_size=12)
+    fig.write_image("p5f_std_diff_dxs_1.pdf",width=600*1.41,height=600,scale=2)
+    fig.show()
+    
+    
+    stds = []
+    dts = np.linspace(0.0025,0.001,10) #[0.1,0.01,0.001]
+    nx = 10
+    #alpha = 0.25
+    for dt in dts:
+        dx = 1/nx #np.sqrt(dt)/alpha
+        nt = int(1/dt)
+        alpha = dt/dx/dx
+        out = sb.run(["./p5f",str(dx),str(nt),str(alpha)],capture_output=True)
+        nx = int(str(out.stdout).split(" ")[6])
+        print("nx = ", nx, " nt = ", nt, " dx = ", dx, " dt = ", dt, " alpha = ", alpha)
+
+
+        data_f = np.loadtxt("fe2d.data")
+        data_f = data_f.reshape((nt+1,nx+1,nx+1))
+
+        data_a = np.loadtxt("analytical2d.data")
+        data_a = data_a.reshape((nt+1,nx+1,nx+1))
+
+        x = np.linspace(0,1,nx+1)
+        stds.append(np.std(data_a-data_f))
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=dts,y=stds))
+    fig.update_xaxes(title="dt")
+    fig.update_yaxes(title="standard deviation")
+    fig.update_layout(font_family="lmodern",title_text="The standard deviation of the difference between the analytical and numerical solution.",font_size=12)
+    fig.write_image("p5f_std_diff_dts.pdf",width=600*1.41,height=600,scale=2)
+    fig.show()
+    
+    
+
+    
 
 def show_differences_litho():
     nt = 401
@@ -163,31 +244,46 @@ def show_differences_litho():
     x = np.linspace(0,1,nx)
     y = np.linspace(0,2,ny)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=x,y=data_steady[-1,:,islice],mode="lines",name="Steady state"))
-    fig.add_trace(go.Scatter(x=x,y=data_steay2[-1,:,islice],mode="lines",name="Pre-enriched"))
-    fig.add_trace(go.Scatter(x=x,y=data_enriched[-1,:,islice],mode="lines",name="Enriched"))
-    fig.update_xaxes(title="Depth / L")
-    fig.update_yaxes(title="Temperature / $^\circ$ C")
-    fig.update_layout(font_family="lmodern",title_text=f"Lithosphere slice through center",font_size=12)
-    fig.write_image(f"litho_temp.pdf",width=600*1.41,height=600,scale=2)
-    fig.show()
+    fig = ps.make_subplots(rows=2,cols=1,shared_xaxes=True,vertical_spacing=0.02)
+    fig.append_trace(go.Scatter(x=x,y=data_steady[-1,:,islice],mode="lines",name="Steady state"),row=1,col=1)
+    fig.append_trace(go.Scatter(x=x,y=data_steay2[-1,:,islice],mode="lines",name="Pre-enriched",line=dict(color="#EF553B")),row=1,col=1)
+    fig.append_trace(go.Scatter(x=x,y=data_enriched[-1,:,islice],mode="lines",name="Enriched",line=dict(color="#00CC96")),row=1,col=1)
 
+    fig.update_yaxes(title="Temperature / C",row=1,col=1)
+    
+    
+    fig.append_trace(go.Scatter(x=x,y=(data_steay2[-1,:,islice]-data_steady[-1,:,islice]),mode="lines",line=dict(color="#EF553B"),showlegend=False),row=2,col=1)
+    fig.append_trace(go.Scatter(x=x,y=(data_enriched[-1,:,islice]-data_steady[-1,:,islice]),mode="lines",line=dict(color="#00CC96"),showlegend=False),row=2,col=1)
+    fig.update_yaxes(title="Absolute Difference Temperature / C", row=2,col=1)
+    fig.update_xaxes(title="Depth / L",row=2,col=1)
+    
+    fig.update_layout(font_family="lmodern",title_text=f"Lithosphere slice through center after 1 Gy",font_size=12)
+    fig.write_image(f"litho_temps.pdf",width=600*1.41,height=600,scale=2)
+    fig.show()
+    """
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x,y=(100*data_steay2[-1,:,islice]-data_steady[-1,:,islice])/data_steady[-1,:,islice],mode="lines",name="Relative pre-enriched"))
     fig.add_trace(go.Scatter(x=x,y=(100*data_enriched[-1,:,islice]-data_steady[-1,:,islice])/data_steady[-1,:,islice],mode="lines",name="Relative enriched"))
     fig.update_xaxes(title="Depth / L")
     fig.update_yaxes(title="Relative Difference / %")
-    fig.update_layout(font_family="lmodern",title_text=f"Difference from the steady state after {nt} timesteps",font_size=12)
+    fig.update_layout(font_family="lmodern",title_text=f"Relative Difference from the steady state after 1 Gy",font_size=12)
     fig.write_image(f"litho_relative_differences.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
-
-    fig = go.Figure(data=go.Contour(x=x,y=y,z=data_enriched[-1,:,:]))
+    """
+    
+    fig = ps.make_subplots(rows=1,cols=2,subplot_titles=("After 0.25 Gy","After 1 Gy"))
+    fig.append_trace(go.Contour(x=x,y=y,z=data_enriched[100,:,:],coloraxis="coloraxis"),row=1,col=1)
+    fig.append_trace(go.Contour(x=x,y=y,z=data_enriched[-1,:,:],coloraxis="coloraxis"),row=1,col=2)
+    fig.update_layout(font_family="lmodern",title_text=f"Contour plot of the temperature in the Lithosphere",font_size=12)
+    fig.update_xaxes(title_text="x / L", row=1, col=1)
+    fig.update_yaxes(title_text="y / L", row=1, col=1)
+    fig.update_xaxes(title_text="x / L", row=1, col=2)
+    fig.update_yaxes(title_text="y / L", row=1, col=2)
+    fig.update_layout(coloraxis_colorbar=dict(title="Temperature / C"))
+    fig.write_image(f"litho_temp_contour.pdf",width=600*1.41,height=600,scale=2)
     fig.show()
-
-    fig = go.Figure(data=go.Contour(x=x,y=y,z=data_enriched[0,:,:]))
-    fig.show()
-
+    """
+    
     ds = data_steady[-1,:,islice]
     ds2 = data_steay2[-1,:,islice]
     de = data_enriched[:,:,islice]
@@ -206,13 +302,12 @@ def show_differences_litho():
     ),
     frames=[go.Frame(data=[go.Scatter(x=x, y=(de[i,:]-ds)/ds)],layout=go.Layout(title_text=f"Frame {i}/{nt}")) for i in range(0,nt,10)])
     fig.show()
-    #embed()
+    #embed()"""
 
 def animate_contour():
     nt = 401
     nx = 80
     ny = 159
-    islice = 80
     print(nt*nx*ny)
     data = np.loadtxt("litho_enriched.data")
     data_enriched = data.reshape((nt,nx,ny))
@@ -246,5 +341,5 @@ if __name__=="__main__":
     #compare_p5c()
     #p5f()
     #animate_2d()
-    #show_differences_litho()
-    animate_contour()
+    show_differences_litho()
+    #animate_contour()

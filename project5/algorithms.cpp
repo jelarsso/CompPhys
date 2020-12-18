@@ -2,6 +2,7 @@
 #include<armadillo>
 #include<iostream>
 #include<string>
+#include<iomanip>
 
 int inline periodic(int indx, int size){
     return (indx+size)%size;
@@ -33,8 +34,9 @@ void output(int nx, int ny, arma::Mat<double> *dump, std::string filename){
     if (output_file.is_open()==false){
         output_file.open(filename);
     }
+    
     for (int i=0;i<nx+1;i++){
-        for (int j=0; j<ny+1;j++) output_file << (*dump)(i,j) << " ";
+        for (int j=0; j<ny+1;j++) output_file << std::setprecision(15) << (*dump)(i,j) << " ";
         output_file << "\n";
     }
     output_file << "\n";
@@ -144,7 +146,7 @@ void forward_euler2d(int n, double dx, double alpha, int number_of_steps_t, arma
         for (int j=1;j<n;j++){
             u(i,j) = init_func(dx*i,dx*j);
             (*usolve)(i,j) = init_func(dx*i,dx*j);
-            };
+            }
     }
     
     output(n,usolve,filename);
